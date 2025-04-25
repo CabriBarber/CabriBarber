@@ -5,7 +5,7 @@ body {
   background-color: #111;
   color: #fff;
 }
-header .hero {
+.hero {
   text-align: center;
   padding: 4rem 2rem;
   background: linear-gradient(135deg, #000, #4a0d0d);
@@ -30,17 +30,9 @@ h1 {
   font-weight: bold;
   cursor: pointer;
 }
-.servicios, .turnos, .contacto {
+.turnos {
   padding: 3rem 2rem;
   text-align: center;
-}
-ul {
-  list-style: none;
-  padding: 0;
-}
-ul li {
-  padding: 0.5rem;
-  font-size: 1.2rem;
 }
 form {
   display: flex;
@@ -60,6 +52,7 @@ input, select {
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
+  margin-top: 1rem;
 }
 .hora-btn {
   padding: 0.5rem 1rem;
@@ -77,21 +70,10 @@ input, select {
   text-decoration: line-through;
   cursor: not-allowed;
 }
-.turno {
-  background-color: #333;
-  padding: 0.5rem 1rem;
-  margin: 0.5rem auto;
-  max-width: 300px;
-  border-radius: 6px;
-}
-.delete-btn {
-  margin-left: 10px;
-  background-color: #ff4444;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  padding: 0.2rem 0.5rem;
-  cursor: pointer;
+.exito {
+  margin-top: 2rem;
+  color: #00cc66;
+  font-weight: bold;
 }
 footer {
   text-align: center;
@@ -99,9 +81,4 @@ footer {
   background-color: #000;
   font-size: 0.9rem;
   color: #999;
-}
-.exito {
-  margin-top: 2rem;
-  color: #00cc66;
-  font-weight: bold;
 }

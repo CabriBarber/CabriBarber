@@ -1,32 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cabri Barber</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cabri Barber - Reserva tu Turno</title>
+  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #00cc66;
-      color: white;
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      font-weight: bold;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-      z-index: 999;
-    }
-    .toast.mostrar {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  </style>
 </head>
 <body>
   <header>
@@ -37,19 +17,9 @@
     </div>
   </header>
 
-  <section class="servicios">
-    <h2>Servicios</h2>
-    <ul>
-      <li><strong>Corte:</strong> $7000</li>
-      <li><strong>Corte y Barba:</strong> $8000</li>
-      <li><strong>Claritos:</strong> $25000</li>
-      <li><strong>Global:</strong> $30000</li>
-    </ul>
-  </section>
-
-  <section id="turnos" class="turnos">
+  <section class="turnos" id="turnos">
     <h2>Reservá tu turno</h2>
-    <form id="reservaForm">
+    <form id="formulario">
       <input type="text" id="nombre" placeholder="Tu nombre" required>
       <select id="servicio" required>
         <option value="">Seleccioná un servicio</option>
@@ -62,35 +32,12 @@
       <div id="horarios" class="horarios"></div>
       <button type="submit" class="btn">Reservar</button>
     </form>
-    <div id="turnosOcupados"></div>
-  </section>
-
-  <section class="contacto">
-    <h2>Contacto</h2>
-    <p>📍 Ver ubicación en Instagram: <a href="https://instagram.com/cabribarber.32" target="_blank">@cabribarber.32</a></p>
-    <p>📱 WhatsApp: <a href="https://wa.me/5491157487583" target="_blank">+54 9 11 5748-7583</a></p>
+    <div id="mensaje-exito" class="exito" style="display:none;">Turno reservado con éxito! ✅</div>
   </section>
 
   <footer>
-    &copy; 2025 Cabri Barber. Todos los derechos reservados.
+    <p>&copy; 2025 Cabri Barber. Todos los derechos reservados.</p>
   </footer>
-
-  <div id="toastExito" class="toast">✅ ¡Turno reservado con éxito!</div>
-
-  <script>
-    const fechaInput = document.getElementById('fecha');
-    const hoy = new Date().toISOString().split("T")[0];
-    fechaInput.min = hoy;
-
-    function mostrarToast() {
-      const toast = document.getElementById("toastExito");
-      toast.classList.add("mostrar");
-      setTimeout(() => {
-        toast.classList.remove("mostrar");
-      }, 4000);
-    }
-    window.mostrarToast = mostrarToast;
-  </script>
 
   <script src="script.js"></script>
 </body>
