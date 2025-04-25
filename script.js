@@ -3,6 +3,14 @@ const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
 
+const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSeJqbI3642cqmoJM4nHHJxtSCMYJT88nFAXl8oxVbLdgpvZQQ/formResponse';
+const fields = {
+  nombre: 'entry.1577919513',
+  servicio: 'entry.2053078771',
+  fecha: 'entry.1817094160',
+  hora: 'entry.1475114644'
+};
+
 const generarHoras = () => {
   horariosContainer.innerHTML = '';
   const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
@@ -41,6 +49,7 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   const nombre = document.getElementById('nombre').value;
   const servicio = document.getElementById('servicio').value;
   const fecha = fechaInput.value;
+
   if (!horaSeleccionada) {
     alert("Seleccioná un horario disponible");
     return;
@@ -61,5 +70,51 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   const url = `https://wa.me/5491157487583?text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
+  // Enviar a Google Form
+  const formData = new FormData();
+  formData.append(fields.nombre, nombre);
+  formData.append(fields.servicio, servicio);
+  formData.append(fields.fecha, fecha);
+  formData.append(fields.hora, horaSeleccionada);
+
+  fetch(formURL, {
+    method: 'POST',
+    mode: 'no-cors',
+    body: formData
+  });
+
   generarHoras();
+  mostrarTurnosAdmin();
+});
+
+function mostrarTurnosAdmin() {
+  const turnosDiv = document.getElementById('turnosOcupados');
+  turnosDiv.innerHTML = '<h3>Turnos Reservados</h3>';
+  const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
+
+  Object.keys(ocupados).forEach(turno => {
+    const div = document.createElement('div');
+    div.className = 'turno ocupado';
+    div.innerText = turno + " - " + ocupados[turno];
+
+    const nombre = document.getElementById('nombre').value;
+    if (nombre === 'admin123') {
+      const btn = document.createElement('button');
+      btn.innerText = '❌';
+      btn.className = 'delete-btn';
+      btn.onclick = () => {
+        delete ocupados[turno];
+        localStorage.setItem('turnos', JSON.stringify(ocupados));
+        generarHoras();
+        mostrarTurnosAdmin();
+      };
+      div.appendChild(btn);
+    }
+
+    turnosDiv.appendChild(div);
+  });
+}
+
+document.getElementById('nombre').addEventListener('input', () => {
+  mostrarTurnosAdmin();
 });
