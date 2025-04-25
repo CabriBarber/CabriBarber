@@ -1,4 +1,3 @@
-
 const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
@@ -20,8 +19,8 @@ const generarHoras = () => {
   for (let h = 11; h <= 21; h++) {
     ["00", "30"].forEach(min => {
       if (h === 21 && min === "30") return;
-      const hora = (h < 10 ? "0" : "") + h + ":" + min;
-      const id = fecha + " " + hora;
+      const hora = `${h.toString().padStart(2, '0')}:${min}`;
+      const id = `${fecha} ${hora}`;
       const ocupado = ocupados[id];
 
       const btn = document.createElement('button');
@@ -55,22 +54,25 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
     return;
   }
 
-  const turnoID = fecha + " " + horaSeleccionada;
+  const turnoID = `${fecha} ${horaSeleccionada}`;
   let ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
   if (ocupados[turnoID]) {
     alert("Ese turno ya está reservado.");
     return;
   }
 
-  ocupados[turnoID] = nombre + " - " + servicio;
+  ocupados[turnoID] = `${nombre} - ${servicio}`;
   localStorage.setItem('turnos', JSON.stringify(ocupados));
 
+  // Mostrar mensaje toast
   window.mostrarToast();
 
-  const mensaje = 'Nuevo turno reservado para Cabri Barber:\nNombre: ' + nombre + '\nServicio: ' + servicio + '\nDía: ' + fecha + '\nHora: ' + horaSeleccionada;
-  const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
+  // Enviar mensaje por WhatsApp
+  const mensaje = `Nuevo turno reservado para Cabri Barber:\nNombre: ${nombre}\nServicio: ${servicio}\nDía: ${fecha}\nHora: ${horaSeleccionada}`;
+  const url = `https://wa.me/5491157487583?text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
+  // Enviar a Google Form (hoja de cálculo)
   const formData = new URLSearchParams();
   formData.append(fields.nombre, nombre);
   formData.append(fields.servicio, servicio);
@@ -98,7 +100,7 @@ function mostrarTurnosAdmin() {
   Object.keys(ocupados).forEach(turno => {
     const div = document.createElement('div');
     div.className = 'turno ocupado';
-    div.innerText = turno + " - " + ocupados[turno];
+    div.innerText = `${turno} - ${ocupados[turno]}`;
 
     const nombre = document.getElementById('nombre').value;
     if (nombre === 'admin123') {
@@ -118,6 +120,4 @@ function mostrarTurnosAdmin() {
   });
 }
 
-document.getElementById('nombre').addEventListener('input', () => {
-  mostrarTurnosAdmin();
-});
+document.getElementById('nombre').addEventListener('input', mostrarTurnosAdmin);
