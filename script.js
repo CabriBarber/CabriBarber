@@ -3,12 +3,12 @@ const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
 
-const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSeJqbI3642cqmoJM4nHHJxtSCMYJT88nFAXl8oxVbLdgpvZQQ/formResponse';
+const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSdSkZ71U_gxZHOFCBg8vUQxdMlZgd0xLbPu3Sc9JObxnAw-LA/formResponse';
 const fields = {
-  nombre: 'entry.1577919513',
-  servicio: 'entry.2053078771',
-  fecha: 'entry.1817094160',
-  hora: 'entry.1475114644'
+  nombre: 'entry.1438269426',
+  servicio: 'entry.1564302542',
+  fecha: 'entry.334889937',
+  hora: 'entry.912676103'
 };
 
 const generarHoras = () => {
@@ -66,8 +66,8 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   localStorage.setItem('turnos', JSON.stringify(ocupados));
   document.getElementById('mensajeExito').style.display = 'block';
 
-  const mensaje = `Nuevo turno reservado para Cabri Barber:\nNombre: ${nombre}\nServicio: ${servicio}\nDía: ${fecha}\nHora: ${horaSeleccionada}`;
-  const url = `https://wa.me/5491157487583?text=${encodeURIComponent(mensaje)}`;
+  const mensaje = 'Nuevo turno reservado para Cabri Barber:\nNombre: ' + nombre + '\nServicio: ' + servicio + '\nDía: ' + fecha + '\nHora: ' + horaSeleccionada;
+  const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
   window.open(url, '_blank');
 
   // Enviar a Google Form
@@ -100,7 +100,7 @@ function mostrarTurnosAdmin() {
     const nombre = document.getElementById('nombre').value;
     if (nombre === 'admin123') {
       const btn = document.createElement('button');
-      btn.innerText = '❌';
+      btn.innerText = 'Eliminar';
       btn.className = 'delete-btn';
       btn.onclick = () => {
         delete ocupados[turno];
