@@ -1,4 +1,3 @@
-
 const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
@@ -70,8 +69,8 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
   window.open(url, '_blank');
 
-  // Enviar a Google Form
-  const formData = new FormData();
+  // Enviar a Google Form con formato correcto
+  const formData = new URLSearchParams();
   formData.append(fields.nombre, nombre);
   formData.append(fields.servicio, servicio);
   formData.append(fields.fecha, fecha);
@@ -80,11 +79,19 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   fetch(formURL, {
     method: 'POST',
     mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     body: formData
   });
 
   generarHoras();
   mostrarTurnosAdmin();
+
+  // Ocultar el mensaje de éxito después de 5 segundos
+  setTimeout(() => {
+    document.getElementById('mensajeExito').style.display = 'none';
+  }, 5000);
 });
 
 function mostrarTurnosAdmin() {
@@ -118,4 +125,3 @@ function mostrarTurnosAdmin() {
 document.getElementById('nombre').addEventListener('input', () => {
   mostrarTurnosAdmin();
 });
-
