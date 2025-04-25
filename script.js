@@ -63,13 +63,15 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
 
   ocupados[turnoID] = nombre + " - " + servicio;
   localStorage.setItem('turnos', JSON.stringify(ocupados));
-  document.getElementById('mensajeExito').style.display = 'block';
+
+  // Mostrar toast de éxito
+  window.mostrarToast();
 
   const mensaje = 'Nuevo turno reservado para Cabri Barber:\nNombre: ' + nombre + '\nServicio: ' + servicio + '\nDía: ' + fecha + '\nHora: ' + horaSeleccionada;
   const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
   window.open(url, '_blank');
 
-  // Enviar a Google Form con formato correcto
+  // Enviar a Google Form
   const formData = new URLSearchParams();
   formData.append(fields.nombre, nombre);
   formData.append(fields.servicio, servicio);
@@ -87,11 +89,6 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
 
   generarHoras();
   mostrarTurnosAdmin();
-
-  // Ocultar el mensaje de éxito después de 5 segundos
-  setTimeout(() => {
-    document.getElementById('mensajeExito').style.display = 'none';
-  }, 5000);
 });
 
 function mostrarTurnosAdmin() {
