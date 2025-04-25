@@ -3,25 +3,40 @@ const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
 
-const webAppURL = 'https://script.google.com/macros/s/AKfycbyK2POKBwuXz2ryV4jCrroA4E6bHmQSxTXLwIxLOVYCzYVLcHdYU0IKh2XSH6XkcTxN/exec';
+const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSdSkZ71U_gxZHOFCBg8vUQxdMlZgd0xLbPu3Sc9JObxnAw-LA/formResponse';
+const fields = {
+  nombre: 'entry.1438269426',
+  servicio: 'entry.1564302542',
+  fecha: 'entry.334889937',
+  hora: 'entry.912676103'
+};
 
 const generarHoras = () => {
   horariosContainer.innerHTML = '';
+  const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
   const fecha = fechaInput.value;
   if (!fecha) return;
 
   for (let h = 11; h <= 21; h++) {
     ["00", "30"].forEach(min => {
       if (h === 21 && min === "30") return;
-      const hora = `${h.toString().padStart(2, '0')}:${min}`;
+      const hora = (h < 10 ? "0" : "") + h + ":" + min;
+      const id = fecha + " " + hora;
+      const ocupado = ocupados[id];
+
       const btn = document.createElement('button');
       btn.className = "hora-btn";
       btn.innerText = hora;
-      btn.onclick = () => {
-        document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('seleccionado'));
-        btn.classList.add('seleccionado');
-        horaSeleccionada = hora;
-      };
+      if (ocupado) {
+        btn.classList.add("ocupado");
+        btn.disabled = true;
+      } else {
+        btn.onclick = () => {
+          document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('seleccionado'));
+          btn.classList.add('seleccionado');
+          horaSeleccionada = hora;
+        };
+      }
       horariosContainer.appendChild(btn);
     });
   }
@@ -29,7 +44,7 @@ const generarHoras = () => {
 
 fechaInput.addEventListener('change', generarHoras);
 
-document.getElementById('formulario').addEventListener('submit', function(e) {
+document.getElementById('reservaForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const nombre = document.getElementById('nombre').value;
   const servicio = document.getElementById('servicio').value;
@@ -40,28 +55,66 @@ document.getElementById('formulario').addEventListener('submit', function(e) {
     return;
   }
 
-  const datos = {
-    nombre,
-    servicio,
-    fecha,
-    hora: horaSeleccionada
-  };
+  const turnoID = fecha + " " + horaSeleccionada;
+  let ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
+  if (ocupados[turnoID]) {
+    alert("Ese turno ya está reservado.");
+    return;
+  }
 
-  fetch(webAppURL, {
+  ocupados[turnoID] = nombre + " - " + servicio;
+  localStorage.setItem('turnos', JSON.stringify(ocupados));
+  document.getElementById('mensajeExito').style.display = 'block';
+
+  const mensaje = 'Nuevo turno reservado para Cabri Barber:\nNombre: ' + nombre + '\nServicio: ' + servicio + '\nDía: ' + fecha + '\nHora: ' + horaSeleccionada;
+  const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
+  window.open(url, '_blank');
+
+  // Enviar a Google Form
+  const formData = new FormData();
+  formData.append(fields.nombre, nombre);
+  formData.append(fields.servicio, servicio);
+  formData.append(fields.fecha, fecha);
+  formData.append(fields.hora, horaSeleccionada);
+
+  fetch(formURL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(datos)
-  }).then(response => {
-    document.getElementById('mensaje-exito').style.display = 'block';
-    setTimeout(() => {
-      document.getElementById('mensaje-exito').style.display = 'none';
-    }, 4000);
-    const mensaje = `Nuevo turno reservado:\nNombre: ${nombre}\nServicio: ${servicio}\nFecha: ${fecha}\nHora: ${horaSeleccionada}`;
-    const whatsappURL = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
-    window.open(whatsappURL, '_blank');
-    generarHoras();
-  }).catch(error => {
-    console.error('Error:', error);
-    alert('Hubo un error al reservar el turno. Intentalo nuevamente.');
+    mode: 'no-cors',
+    body: formData
   });
+
+  generarHoras();
+  mostrarTurnosAdmin();
+});
+
+function mostrarTurnosAdmin() {
+  const turnosDiv = document.getElementById('turnosOcupados');
+  turnosDiv.innerHTML = '<h3>Turnos Reservados</h3>';
+  const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
+
+  Object.keys(ocupados).forEach(turno => {
+    const div = document.createElement('div');
+    div.className = 'turno ocupado';
+    div.innerText = turno + " - " + ocupados[turno];
+
+    const nombre = document.getElementById('nombre').value;
+    if (nombre === 'admin123') {
+      const btn = document.createElement('button');
+      btn.innerText = 'Eliminar';
+      btn.className = 'delete-btn';
+      btn.onclick = () => {
+        delete ocupados[turno];
+        localStorage.setItem('turnos', JSON.stringify(ocupados));
+        generarHoras();
+        mostrarTurnosAdmin();
+      };
+      div.appendChild(btn);
+    }
+
+    turnosDiv.appendChild(div);
+  });
+}
+
+document.getElementById('nombre').addEventListener('input', () => {
+  mostrarTurnosAdmin();
 });
