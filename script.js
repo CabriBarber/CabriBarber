@@ -3,12 +3,12 @@ const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
 
-const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSdSkZ71U_gxZHOFCBg8vUQxdMlZgd0xLbPu3Sc9JObxnAw-LA/formResponse';
+const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSeJqbI3642cqmoJM4nHHJxtSCMYJT88nFAXl8oxVbLdgpvZQQ/formResponse';
 const fields = {
-  nombre: 'entry.1438269426',
-  servicio: 'entry.1564302542',
-  fecha: 'entry.334889937',
-  hora: 'entry.912676103'
+  nombre: 'entry.626323476',
+  servicio: 'entry.1149814508',
+  fecha: 'entry.879764160',
+  hora: 'entry.237894632'
 };
 
 const generarHoras = () => {
@@ -118,3 +118,4 @@ function mostrarTurnosAdmin() {
 document.getElementById('nombre').addEventListener('input', () => {
   mostrarTurnosAdmin();
 });
+
