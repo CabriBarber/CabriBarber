@@ -1,3 +1,4 @@
+
 const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
@@ -64,14 +65,12 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   ocupados[turnoID] = nombre + " - " + servicio;
   localStorage.setItem('turnos', JSON.stringify(ocupados));
 
-  // Mostrar toast de éxito
   window.mostrarToast();
 
   const mensaje = 'Nuevo turno reservado para Cabri Barber:\nNombre: ' + nombre + '\nServicio: ' + servicio + '\nDía: ' + fecha + '\nHora: ' + horaSeleccionada;
   const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
   window.open(url, '_blank');
 
-  // Enviar a Google Form
   const formData = new URLSearchParams();
   formData.append(fields.nombre, nombre);
   formData.append(fields.servicio, servicio);

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,7 +8,6 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* Estilo para el mensaje de éxito tipo toast */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -23,7 +23,6 @@
       transition: opacity 0.5s ease;
       z-index: 999;
     }
-
     .toast.mostrar {
       opacity: 1;
       pointer-events: auto;
@@ -77,16 +76,13 @@
     &copy; 2025 Cabri Barber. Todos los derechos reservados.
   </footer>
 
-  <!-- Toast para mostrar mensaje de éxito -->
   <div id="toastExito" class="toast">✅ ¡Turno reservado con éxito!</div>
 
   <script>
-    // Setear fecha mínima en el campo de fecha
     const fechaInput = document.getElementById('fecha');
     const hoy = new Date().toISOString().split("T")[0];
     fechaInput.min = hoy;
 
-    // Función para mostrar el toast
     function mostrarToast() {
       const toast = document.getElementById("toastExito");
       toast.classList.add("mostrar");
@@ -94,8 +90,6 @@
         toast.classList.remove("mostrar");
       }, 4000);
     }
-
-    // Exportar para que lo use el script.js
     window.mostrarToast = mostrarToast;
   </script>
 
