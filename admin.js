@@ -1,9 +1,8 @@
-// admin.js
 document.addEventListener('DOMContentLoaded', async () => {
   const tbodyTurnos = document.getElementById('tbodyTurnos');
 
   try {
-    const snapshot = await db.collection('turnos').get();
+    const snapshot = await window.db.collection('turnos').get();
     
     if (snapshot.empty) {
       tbodyTurnos.innerHTML = '<tr><td colspan="5">No hay turnos reservados todavía.</td></tr>';
@@ -33,8 +32,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function eliminarTurno(id) {
   if (confirm('¿Estás seguro que querés eliminar este turno?')) {
-    await db.collection('turnos').doc(id).delete();
+    await window.db.collection('turnos').doc(id).delete();
     alert('Turno eliminado.');
-    window.location.reload(); // Recarga la página para actualizar la lista
+    window.location.reload();
   }
 }
