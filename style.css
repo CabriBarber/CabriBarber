@@ -6,8 +6,15 @@ body {
   text-align: center;
 }
 header {
-  padding: 1.5rem;
+  padding: 2rem 1rem;
   background: #222;
+}
+.logo {
+  max-width: 100px;
+  margin-bottom: 1rem;
+}
+h1, h2 {
+  margin: 0.5rem 0;
 }
 input, select {
   margin: 0.5rem;
@@ -15,14 +22,26 @@ input, select {
   border-radius: 5px;
   border: none;
 }
+ul {
+  list-style: none;
+  padding: 0;
+}
+ul li {
+  margin: 0.5rem 0;
+}
 .btn {
   background-color: red;
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.5rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   color: #fff;
   font-weight: bold;
   cursor: pointer;
+  margin-top: 1rem;
+  text-decoration: none;
+}
+.btn:hover {
+  background-color: darkred;
 }
 .horarios button {
   margin: 0.2rem;
@@ -33,4 +52,14 @@ input, select {
 }
 .login-container {
   padding: 2rem;
+}
+.contacto, .servicios, .reservar {
+  padding: 2rem 1rem;
+}
+footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #000;
+  font-size: 0.8rem;
+  color: #aaa;
 }
