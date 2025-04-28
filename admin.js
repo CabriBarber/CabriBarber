@@ -1,34 +1,33 @@
 // admin.js
 document.addEventListener('DOMContentLoaded', async () => {
-  const turnosLista = document.getElementById('turnosLista');
+  const tbodyTurnos = document.getElementById('tbodyTurnos');
 
   try {
     const snapshot = await db.collection('turnos').get();
     
     if (snapshot.empty) {
-      turnosLista.innerHTML += '<p>No hay turnos reservados todavía.</p>';
+      tbodyTurnos.innerHTML = '<tr><td colspan="5">No hay turnos reservados todavía.</td></tr>';
       return;
     }
 
     snapshot.forEach(doc => {
       const turno = doc.data();
-      const div = document.createElement('div');
-      div.classList.add('turno');
+      const tr = document.createElement('tr');
 
-      div.innerHTML = `
-        <p><strong>Nombre:</strong> ${turno.nombre}</p>
-        <p><strong>Servicio:</strong> ${turno.servicio}</p>
-        <p><strong>Fecha:</strong> ${turno.fecha}</p>
-        <p><strong>Hora:</strong> ${turno.hora}</p>
-        <button class="btn" onclick="eliminarTurno('${doc.id}')">Eliminar</button>
+      tr.innerHTML = `
+        <td>${turno.nombre}</td>
+        <td>${turno.servicio}</td>
+        <td>${turno.fecha}</td>
+        <td>${turno.hora}</td>
+        <td><button class="btn" onclick="eliminarTurno('${doc.id}')">Eliminar</button></td>
       `;
 
-      turnosLista.appendChild(div);
+      tbodyTurnos.appendChild(tr);
     });
 
   } catch (error) {
     console.error('Error al traer turnos:', error);
-    turnosLista.innerHTML += '<p>Error cargando turnos.</p>';
+    tbodyTurnos.innerHTML = '<tr><td colspan="5">Error cargando turnos.</td></tr>';
   }
 });
 
