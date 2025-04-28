@@ -1,18 +1,15 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', function() {
   const tbodyTurnos = document.getElementById('tbodyTurnos');
 
-  try {
-    const snapshot = await window.db.collection('turnos').get();
-    
-    if (snapshot.empty) {
+  db.collection('turnos').get().then((querySnapshot) => {
+    if (querySnapshot.empty) {
       tbodyTurnos.innerHTML = '<tr><td colspan="5">No hay turnos reservados todavía.</td></tr>';
       return;
     }
 
-    snapshot.forEach(doc => {
+    querySnapshot.forEach((doc) => {
       const turno = doc.data();
       const tr = document.createElement('tr');
-
       tr.innerHTML = `
         <td>${turno.nombre}</td>
         <td>${turno.servicio}</td>
@@ -20,20 +17,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>${turno.hora}</td>
         <td><button class="btn" onclick="eliminarTurno('${doc.id}')">Eliminar</button></td>
       `;
-
       tbodyTurnos.appendChild(tr);
     });
-
-  } catch (error) {
-    console.error('Error al traer turnos:', error);
+  }).catch((error) => {
+    console.error("Error al traer turnos: ", error);
     tbodyTurnos.innerHTML = '<tr><td colspan="5">Error cargando turnos.</td></tr>';
-  }
+  });
 });
 
-async function eliminarTurno(id) {
+function eliminarTurno(id) {
   if (confirm('¿Estás seguro que querés eliminar este turno?')) {
-    await window.db.collection('turnos').doc(id).delete();
-    alert('Turno eliminado.');
-    window.location.reload();
+    db.collection('turnos').doc(id).delete().then(() => {
+      alert('Turno eliminado.');
+      window.location.reload();
+    }).catch((error) => {
+      console.error("Error eliminando turno: ", error);
+    });
   }
 }
