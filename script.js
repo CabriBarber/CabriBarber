@@ -1,15 +1,6 @@
-
 const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
-
-const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSdSkZ71U_gxZHOFCBg8vUQxdMlZgd0xLbPu3Sc9JObxnAw-LA/formResponse';
-const fields = {
-  nombre: 'entry.1438269426',
-  servicio: 'entry.1564302542',
-  fecha: 'entry.334889937',
-  hora: 'entry.912676103'
-};
 
 const generarHoras = () => {
   horariosContainer.innerHTML = '';
@@ -44,7 +35,7 @@ const generarHoras = () => {
 
 fechaInput.addEventListener('change', generarHoras);
 
-document.getElementById('reservaForm').addEventListener('submit', function(e) {
+document.getElementById('reservaForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const nombre = document.getElementById('nombre').value;
   const servicio = document.getElementById('servicio').value;
@@ -70,18 +61,18 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
   const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
   window.open(url, '_blank');
 
-  // Enviar a Google Form
-  const formData = new FormData();
-  formData.append(fields.nombre, nombre);
-  formData.append(fields.servicio, servicio);
-  formData.append(fields.fecha, fecha);
-  formData.append(fields.hora, horaSeleccionada);
-
-  fetch(formURL, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: formData
-  });
+  // ✅ NUEVO: guardar en Firebase Firestore
+  try {
+    await db.collection('turnos').add({
+      nombre: nombre,
+      servicio: servicio,
+      fecha: fecha,
+      hora: horaSeleccionada
+    });
+    console.log('✅ Turno guardado en Firestore');
+  } catch (error) {
+    console.error('❌ Error al guardar en Firestore:', error);
+  }
 
   generarHoras();
   mostrarTurnosAdmin();
@@ -89,6 +80,8 @@ document.getElementById('reservaForm').addEventListener('submit', function(e) {
 
 function mostrarTurnosAdmin() {
   const turnosDiv = document.getElementById('turnosOcupados');
+  if (!turnosDiv) return;
+  
   turnosDiv.innerHTML = '<h3>Turnos Reservados</h3>';
   const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
 
