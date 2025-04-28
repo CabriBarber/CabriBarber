@@ -1,36 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cabri Barber</title>
+  <title>Cabri Barber - Reservá tu turno</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap" rel="stylesheet">
+  <script src="firebase.js" defer></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header>
-    <div class="hero">
-      <img src="logo.png" alt="Cabri Barber" class="logo">
-      <h1>Tu estilo, nuestra precisión</h1>
-      <a href="#turnos" class="btn">Reservá tu turno</a>
-    </div>
+    <h1>Cabri Barber</h1>
+    <p>Tu estilo, nuestra precisión</p>
   </header>
 
-  <section class="servicios">
-    <h2>Servicios</h2>
-    <ul>
-      <li><strong>Corte:</strong> $7000</li>
-      <li><strong>Corte y Barba:</strong> $8000</li>
-      <li><strong>Claritos:</strong> $25000</li>
-      <li><strong>Global:</strong> $30000</li>
-    </ul>
-  </section>
-
-  <section id="turnos" class="turnos">
+  <section class="reservar">
     <h2>Reservá tu turno</h2>
     <form id="reservaForm">
-      <input type="text" id="nombre" placeholder="Tu nombre" required>
+      <input type="text" id="nombre" placeholder="Tu nombre" required />
       <select id="servicio" required>
         <option value="">Seleccioná un servicio</option>
         <option value="Corte">Corte</option>
@@ -38,24 +25,11 @@
         <option value="Claritos">Claritos</option>
         <option value="Global">Global</option>
       </select>
-      <input type="date" id="fecha" required>
+      <input type="date" id="fecha" required />
       <div id="horarios" class="horarios"></div>
       <button type="submit" class="btn">Reservar</button>
     </form>
     <div id="mensajeExito" class="exito" style="display:none;">✅ ¡Turno reservado con éxito!</div>
-    <div id="turnosOcupados"></div>
   </section>
-
-  <section class="contacto">
-    <h2>Contacto</h2>
-    <p>📍 Ver ubicación en Instagram: <a href="https://instagram.com/cabribarber.32" target="_blank">@cabribarber.32</a></p>
-    <p>📱 WhatsApp: <a href="https://wa.me/5491157487583" target="_blank">+54 9 11 5748-7583</a></p>
-  </section>
-
-  <footer>
-    &copy; 2025 Cabri Barber. Todos los derechos reservados.
-  </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
