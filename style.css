@@ -101,3 +101,14 @@ footer {
   border-radius: 10px;
   z-index: 999;
 }
+
+
+#horarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 10px;
+}
