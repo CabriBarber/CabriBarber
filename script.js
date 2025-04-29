@@ -49,16 +49,18 @@ const generarHoras = async () => {
 document.getElementById('reservar-btn').addEventListener('click', async () => {
   const nombre = document.getElementById('nombre').value;
   const fecha = fechaInput.value;
+  const servicio = document.getElementById('servicio').value;
 
-  if (!nombre || !fecha || !horaSeleccionada) {
+  if (!nombre || !fecha || !horaSeleccionada || !servicio) {
     alert("Por favor completá todos los campos y seleccioná una hora.");
     return;
   }
 
   try {
     await db.collection("turnos").add({
-      nombre: nombre,
-      fecha: fecha,
+      nombre,
+      servicio,
+      fecha,
       hora: horaSeleccionada
     });
     alert("¡Turno reservado con éxito!");
