@@ -3,7 +3,6 @@ const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
 
-// Función para obtener los turnos ocupados desde Firestore
 const obtenerTurnosOcupados = async (fecha) => {
   const snapshot = await db.collection("turnos").where("fecha", "==", fecha).get();
   const ocupados = {};
@@ -20,6 +19,9 @@ const generarHoras = async () => {
   if (!fecha) return;
 
   const ocupados = await obtenerTurnosOcupados(fecha);
+  const hoy = new Date();
+  const esHoy = fecha === hoy.toISOString().split('T')[0];
+  const horaActual = hoy.getHours() + hoy.getMinutes() / 60;
 
   for (let h = 11; h <= 21; h++) {
     ["00", "30"].forEach(min => {
@@ -31,8 +33,15 @@ const generarHoras = async () => {
       const btn = document.createElement('button');
       btn.className = "hora-btn";
       btn.innerText = hora;
+
+      const horaDecimal = h + (min === "30" ? 0.5 : 0);
+      const vencido = esHoy && horaDecimal < horaActual;
+
       if (ocupado) {
         btn.classList.add("ocupado");
+        btn.disabled = true;
+      } else if (vencido) {
+        btn.classList.add("vencido");
         btn.disabled = true;
       } else {
         btn.onclick = () => {
@@ -63,8 +72,14 @@ document.getElementById('reservar-btn').addEventListener('click', async () => {
       fecha,
       hora: horaSeleccionada
     });
-    alert("¡Turno reservado con éxito!");
-    generarHoras();  // refresca los botones
+
+    const mensaje = document.createElement('div');
+    mensaje.className = "mensaje-exito";
+    mensaje.innerText = "¡Turno reservado con éxito!";
+    document.body.appendChild(mensaje);
+    setTimeout(() => mensaje.remove(), 3000);
+
+    generarHoras();  // refresca
   } catch (error) {
     console.error("Error al reservar el turno:", error);
     alert("Hubo un error al reservar el turno.");
