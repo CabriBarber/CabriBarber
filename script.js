@@ -1,12 +1,25 @@
+
 const horariosContainer = document.getElementById('horarios');
 const fechaInput = document.getElementById('fecha');
 let horaSeleccionada = null;
 
-const generarHoras = () => {
+// Función para obtener los turnos ocupados desde Firestore
+const obtenerTurnosOcupados = async (fecha) => {
+  const snapshot = await db.collection("turnos").where("fecha", "==", fecha).get();
+  const ocupados = {};
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    ocupados[data.fecha + " " + data.hora] = true;
+  });
+  return ocupados;
+};
+
+const generarHoras = async () => {
   horariosContainer.innerHTML = '';
-  const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
   const fecha = fechaInput.value;
   if (!fecha) return;
+
+  const ocupados = await obtenerTurnosOcupados(fecha);
 
   for (let h = 11; h <= 21; h++) {
     ["00", "30"].forEach(min => {
@@ -33,81 +46,27 @@ const generarHoras = () => {
   }
 };
 
-fechaInput.addEventListener('change', generarHoras);
-
-document.getElementById('reservaForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
+document.getElementById('reservar-btn').addEventListener('click', async () => {
   const nombre = document.getElementById('nombre').value;
-  const servicio = document.getElementById('servicio').value;
   const fecha = fechaInput.value;
 
-  if (!horaSeleccionada) {
-    alert("Seleccioná un horario disponible");
+  if (!nombre || !fecha || !horaSeleccionada) {
+    alert("Por favor completá todos los campos y seleccioná una hora.");
     return;
   }
 
-  const turnoID = fecha + " " + horaSeleccionada;
-  let ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
-  if (ocupados[turnoID]) {
-    alert("Ese turno ya está reservado.");
-    return;
-  }
-
-  ocupados[turnoID] = nombre + " - " + servicio;
-  localStorage.setItem('turnos', JSON.stringify(ocupados));
-  document.getElementById('mensajeExito').style.display = 'block';
-
-  const mensaje = 'Nuevo turno reservado para Cabri Barber:\nNombre: ' + nombre + '\nServicio: ' + servicio + '\nDía: ' + fecha + '\nHora: ' + horaSeleccionada;
-  const url = 'https://wa.me/5491157487583?text=' + encodeURIComponent(mensaje);
-  window.open(url, '_blank');
-
-  // ✅ NUEVO: guardar en Firebase Firestore
   try {
-    await db.collection('turnos').add({
+    await db.collection("turnos").add({
       nombre: nombre,
-      servicio: servicio,
       fecha: fecha,
       hora: horaSeleccionada
     });
-    console.log('✅ Turno guardado en Firestore');
+    alert("¡Turno reservado con éxito!");
+    generarHoras();  // refresca los botones
   } catch (error) {
-    console.error('❌ Error al guardar en Firestore:', error);
+    console.error("Error al reservar el turno:", error);
+    alert("Hubo un error al reservar el turno.");
   }
-
-  generarHoras();
-  mostrarTurnosAdmin();
 });
 
-function mostrarTurnosAdmin() {
-  const turnosDiv = document.getElementById('turnosOcupados');
-  if (!turnosDiv) return;
-  
-  turnosDiv.innerHTML = '<h3>Turnos Reservados</h3>';
-  const ocupados = JSON.parse(localStorage.getItem('turnos')) || {};
-
-  Object.keys(ocupados).forEach(turno => {
-    const div = document.createElement('div');
-    div.className = 'turno ocupado';
-    div.innerText = turno + " - " + ocupados[turno];
-
-    const nombre = document.getElementById('nombre').value;
-    if (nombre === 'admin123') {
-      const btn = document.createElement('button');
-      btn.innerText = 'Eliminar';
-      btn.className = 'delete-btn';
-      btn.onclick = () => {
-        delete ocupados[turno];
-        localStorage.setItem('turnos', JSON.stringify(ocupados));
-        generarHoras();
-        mostrarTurnosAdmin();
-      };
-      div.appendChild(btn);
-    }
-
-    turnosDiv.appendChild(div);
-  });
-}
-
-document.getElementById('nombre').addEventListener('input', () => {
-  mostrarTurnosAdmin();
-});
+fechaInput.addEventListener('change', generarHoras);
