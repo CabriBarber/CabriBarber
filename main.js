@@ -12,25 +12,48 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Fecha mínima: hoy
 const fechaInput = document.getElementById("fecha");
 const hoy = new Date().toISOString().split("T")[0];
 fechaInput.min = hoy;
 
-// Generar horarios: 10:30 a 21:00 cada 30min
 const horaSelect = document.getElementById("hora");
-for (let h = 10; h <= 20; h++) {
-  ["30", "00"].forEach(min => {
-    if (h === 10 && min === "00") return;
-    const hora = `${h.toString().padStart(2, '0')}:${min}`;
-    const option = document.createElement("option");
-    option.value = hora;
-    option.textContent = hora;
-    horaSelect.appendChild(option);
-  });
-}
 
-// Enviar turno por WhatsApp y guardar en Firebase
+// Validar domingos
+fechaInput.addEventListener("change", async () => {
+  const fechaSeleccionada = new Date(fechaInput.value);
+  if (fechaSeleccionada.getDay() === 0) {
+    alert("No se pueden reservar turnos los domingos.");
+    fechaInput.value = "";
+    horaSelect.innerHTML = "";
+    return;
+  }
+
+  horaSelect.innerHTML = "";
+
+  const snapshot = await db.collection("turnos")
+    .where("fecha", "==", fechaInput.value)
+    .get();
+
+  const horariosOcupados = snapshot.docs.map(doc => doc.data().hora);
+
+  for (let h = 10; h <= 20; h++) {
+    ["30", "00"].forEach(min => {
+      if (h === 10 && min === "00") return;
+      const hora = `${h.toString().padStart(2, '0')}:${min}`;
+      const option = document.createElement("option");
+      option.value = hora;
+      if (horariosOcupados.includes(hora)) {
+        option.textContent = `${hora} (Ocupado)`;
+        option.disabled = true;
+        option.className = "text-gray-400";
+      } else {
+        option.textContent = hora;
+      }
+      horaSelect.appendChild(option);
+    });
+  }
+});
+
 document.getElementById("turnoForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const nombre = document.getElementById("nombre").value;
@@ -41,10 +64,33 @@ document.getElementById("turnoForm").addEventListener("submit", async (e) => {
   const turno = { nombre, servicio, fecha, hora };
   await db.collection("turnos").add(turno);
 
-  const mensaje = encodeURIComponent(`Nuevo turno Cabri Barber:%0ANombre: ${nombre}%0AServicio: ${servicio}%0AFecha: ${fecha}%0AHora: ${hora}`);
+  const mensaje = encodeURIComponent(
+    `CABRI BARBER
+
+🧍 Nombre: ${nombre}
+✂️ Servicio: ${servicio}
+📅 Día: ${fecha}
+⏰ Horario: ${hora}`
+  );
   const numero = "5491157487583";
   window.open(`https://wa.me/${numero}?text=${mensaje}`, "_blank");
 
-  document.getElementById("mensaje").textContent = "¡Turno reservado y enviado por WhatsApp!";
+  // Feedback visual
+  const boton = document.querySelector("button[type='submit']");
+  boton.textContent = "Reservado ✔";
+  boton.classList.remove("bg-green-500", "hover:bg-green-600");
+  boton.classList.add("bg-red-600", "hover:bg-red-700");
+
+  const mensajeEl = document.getElementById("mensaje");
+  mensajeEl.textContent = "¡Tu turno fue reservado con éxito!";
+  mensajeEl.classList.add("text-red-400", "font-bold");
+
+  setTimeout(() => {
+    mensajeEl.textContent = "";
+    boton.textContent = "Reservar";
+    boton.classList.remove("bg-red-600", "hover:bg-red-700");
+    boton.classList.add("bg-green-500", "hover:bg-green-600");
+  }, 3000);
+
   e.target.reset();
 });
