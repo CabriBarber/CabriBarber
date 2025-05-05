@@ -92,7 +92,8 @@
   
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="main.js"></script>
+    
+<script src="main.js"></script>
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyBlJvTey3YXLMr0lVyUGzlcYhiFGzAFWN0",
@@ -117,18 +118,23 @@
       return;
     }
 
-    await db.collection("turnos").add({ nombre, servicio, fecha, hora });
+    try {
+      await db.collection("turnos").add({ nombre, servicio, fecha, hora });
 
-    const mensaje = encodeURIComponent(
-      `Nombre: ${nombre}
+      const mensaje = encodeURIComponent(
+        `Nombre: ${nombre}
 Servicio: ${servicio}
 Fecha: ${fecha}
 Hora: ${hora}`
-    );
-    window.open(`https://wa.me/5491157487583?text=${mensaje}`, "_blank");
+      );
+      window.open(`https://wa.me/5491157487583?text=${mensaje}`, "_blank");
+    } catch (e) {
+      alert("Error al guardar el turno. Verificá conexión o Firebase.");
+    }
   });
 </script>
 </body>
 </html>
+
 
 
