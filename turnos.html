@@ -36,7 +36,20 @@
       db.collection("turnos").orderBy("fecha").get().then(snapshot => {
         contenedor.innerHTML = "";
         let encontrado = false;
+        
+        const turnos = [];
         snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.fecha > hoyISO || (data.fecha === hoyISO && data.hora >= ahoraHora)) {
+            turnos.push({ id: data.id, ...data });
+          }
+        });
+        turnos.sort((a, b) => {
+          if (a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
+          return a.hora.localeCompare(b.hora);
+        });
+        turnos.forEach(data => {
+
           const data = doc.data();
           if (data.fecha > hoyISO || (data.fecha === hoyISO && data.hora >= ahoraHora)) {
             encontrado = true;
@@ -47,7 +60,7 @@
               <p><strong>Servicio:</strong> ${data.servicio}</p>
               <p><strong>Fecha:</strong> ${data.fecha}</p>
               <p><strong>Hora:</strong> ${data.hora}</p>
-              <button onclick="eliminarTurno('${doc.id}')" class="mt-2 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded">
+              <button onclick="eliminarTurno('${data.id}')" class="mt-2 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded">
                 Eliminar
               </button>`;
             contenedor.appendChild(div);
