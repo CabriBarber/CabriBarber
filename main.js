@@ -43,18 +43,14 @@ fechaInput.addEventListener("change", async () => {
 
   const horariosOcupados = snapshot.docs.map(doc => doc.data().hora);
 
-  // Mostrar todos los horarios, tachando los ya ocupados
+  // Filtrar y agregar al select solo los horarios disponibles
   horarios.forEach(hora => {
-    const option = document.createElement("option");
-    option.value = hora;
-    option.textContent = hora;
-    if (horariosOcupados.includes(hora)) {
-      option.disabled = true;
-      option.textContent += " (Ocupado)";
-      option.style.textDecoration = "line-through";
-      option.style.color = "#888";
+    if (!horariosOcupados.includes(hora)) {
+      const option = document.createElement("option");
+      option.value = hora;
+      option.textContent = hora;
+      horaSelect.appendChild(option);
     }
-    horaSelect.appendChild(option);
   });
 });
 
@@ -62,10 +58,6 @@ fechaInput.addEventListener("change", async () => {
 const form = document.getElementById("turnoForm");
 
 form.addEventListener("submit", async (e) => {
-
-  const mensaje = `Nombre: ${nombre}\nservicio: ${servicio}\ndia: ${fecha}\nhora: ${hora}`;
-  window.open("https://wa.me/5491157487583?text=" + encodeURIComponent(mensaje), "_blank");
-
   e.preventDefault();
 
   const nombre = document.getElementById("nombre").value.trim();
