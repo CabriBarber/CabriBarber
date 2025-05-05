@@ -62,6 +62,10 @@ fechaInput.addEventListener("change", async () => {
 const form = document.getElementById("turnoForm");
 
 form.addEventListener("submit", async (e) => {
+
+  const mensaje = `Nombre: ${nombre}\nservicio: ${servicio}\ndia: ${fecha}\nhora: ${hora}`;
+  window.open("https://wa.me/5491157487583?text=" + encodeURIComponent(mensaje), "_blank");
+
   e.preventDefault();
 
   const nombre = document.getElementById("nombre").value.trim();
