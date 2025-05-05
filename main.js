@@ -45,7 +45,26 @@ fechaInput.addEventListener("change", async () => {
   const horariosOcupados = snapshot.docs.map(doc => doc.data().hora);
 
   // Mostrar todos los horarios, tachando los ocupados
-  horarios.forEach(hora => {
+  const ahora = new Date();
+  const esHoy = fecha === hoy;
+
+horarios.forEach(hora => {
+    const option = document.createElement("option");
+    option.value = hora;
+    option.textContent = hora;
+
+    const horaCompleta = new Date(`${fecha}T${hora}`);
+    const yaPaso = esHoy && horaCompleta < ahora;
+
+    if (horariosOcupados.includes(hora) || yaPaso) {
+      option.disabled = true;
+      option.textContent += yaPaso ? " (Pasado)" : " (Ocupado)";
+      option.style.textDecoration = "line-through";
+      option.style.color = "#888";
+    }
+
+    horaSelect.appendChild(option);
+  });
     const option = document.createElement("option");
     option.value = hora;
     option.textContent = hora;
