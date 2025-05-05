@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Turnos desde ahora</title>
+  <title>Turnos Actuales</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-neutral-900 text-white p-6">
-  <h1 class="text-3xl font-bold mb-6 text-center">Turnos Reservados (desde ahora)</h1>
+  <h1 class="text-3xl font-bold mb-6 text-center">Turnos Actuales y Futuros</h1>
   <div id="turnos" class="space-y-4 max-w-2xl mx-auto"></div>
 
   <script>
@@ -27,32 +27,43 @@
 
     const contenedor = document.getElementById("turnos");
 
-    function cargarTurnosDesdeAhora() {
+    function cargarTurnos() {
       contenedor.innerHTML = "<p class='text-center'>Cargando turnos...</p>";
+
       const hoy = new Date();
       const hoyISO = hoy.toISOString().split("T")[0];
       const ahoraHora = hoy.toTimeString().split(":").slice(0,2).join(":");
 
-      db.collection("turnos").orderBy("fecha").get().then(snapshot => {
-        contenedor.innerHTML = "";
-        let encontrado = false;
-        
-        const turnos = [];
+      db.collection("turnos").get().then(snapshot => {
+        const turnosValidos = [];
         snapshot.forEach(doc => {
           const data = doc.data();
-          if (data.fecha > hoyISO || (data.fecha === hoyISO && data.hora >= ahoraHora)) {
-            turnos.push({ id: data.id, ...data });
+          const id = doc.id;
+
+          // Eliminar si es fecha anterior a hoy
+          if (data.fecha < hoyISO) {
+            db.collection("turnos").doc(id).delete();
+          } else {
+            // Si es hoy pero la hora ya pasó, también eliminar
+            if (data.fecha === hoyISO && data.hora < ahoraHora) {
+              db.collection("turnos").doc(id).delete();
+            } else {
+              turnosValidos.push({ id, ...data });
+            }
           }
         });
-        turnos.sort((a, b) => {
+
+        // Ordenar por fecha y hora
+        turnosValidos.sort((a, b) => {
           if (a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
           return a.hora.localeCompare(b.hora);
         });
-        turnos.forEach(data => {
 
-          const data = doc.data();
-          if (data.fecha > hoyISO || (data.fecha === hoyISO && data.hora >= ahoraHora)) {
-            encontrado = true;
+        contenedor.innerHTML = "";
+        if (turnosValidos.length === 0) {
+          contenedor.innerHTML = "<p class='text-center text-gray-400'>No hay turnos activos.</p>";
+        } else {
+          turnosValidos.forEach(data => {
             const div = document.createElement("div");
             div.className = "bg-gray-800 p-4 rounded shadow";
             div.innerHTML = `
@@ -62,24 +73,18 @@
               <p><strong>Hora:</strong> ${data.hora}</p>
               <button onclick="eliminarTurno('${data.id}')" class="mt-2 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded">
                 Eliminar
-              </button>`;
+              </button>
+            `;
             contenedor.appendChild(div);
-          }
-        });
-        if (!encontrado) {
-          contenedor.innerHTML = "<p class='text-center text-gray-400'>No hay turnos reservados desde este momento.</p>";
+          });
         }
-      }).catch(error => {
-        console.error("Error al cargar turnos:", error);
-        contenedor.innerHTML = "<p class='text-center text-red-500'>Error al cargar turnos.</p>";
       });
     }
 
-    
     function eliminarTurno(id) {
       if (confirm("¿Seguro que querés eliminar este turno?")) {
         db.collection("turnos").doc(id).delete().then(() => {
-          cargarTurnosDesdeAhora();
+          cargarTurnos();
         }).catch(err => {
           alert("Error al eliminar el turno.");
           console.error(err);
@@ -87,8 +92,7 @@
       }
     }
 
-    cargarTurnosDesdeAhora();
-    
+    cargarTurnos();
   </script>
 </body>
 </html>
