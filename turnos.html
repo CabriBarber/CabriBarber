@@ -2,25 +2,56 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Turnos</title>
+  <title>Turnos desde ahora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background-color: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      font-size: 2rem;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body>
-  <h1>Acá se verán los turnos</h1>
+<body class="bg-neutral-900 text-white p-6">
+  <h1 class="text-3xl font-bold mb-6 text-center">Turnos Reservados (desde ahora)</h1>
+  <div id="turnos" class="space-y-4 max-w-2xl mx-auto"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBlJvTey3YXLMr0lVyUGzlcYhiFGzAFWN0",
+      authDomain: "cabriweb.firebaseapp.com",
+      projectId: "cabriweb",
+      storageBucket: "cabriweb.firebasestorage.app",
+      messagingSenderId: "1083893391061",
+      appId: "1:1083893391061:web:14c6fd57798d3705f90c5c",
+      measurementId: "G-686H031B6Z"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const contenedor = document.getElementById("turnos");
+
+    function cargarTurnosDesdeAhora() {
+      contenedor.innerHTML = "";
+      const hoy = new Date();
+      const hoyISO = hoy.toISOString().split("T")[0];
+      const ahoraHora = hoy.toTimeString().split(":").slice(0,2).join(":");
+
+      db.collection("turnos").orderBy("fecha").orderBy("hora").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.fecha > hoyISO || (data.fecha === hoyISO && data.hora >= ahoraHora)) {
+            const div = document.createElement("div");
+            div.className = "bg-gray-800 p-4 rounded shadow";
+            div.innerHTML = `
+              <p><strong>Nombre:</strong> ${data.nombre}</p>
+              <p><strong>Servicio:</strong> ${data.servicio}</p>
+              <p><strong>Fecha:</strong> ${data.fecha}</p>
+              <p><strong>Hora:</strong> ${data.hora}</p>
+            `;
+            contenedor.appendChild(div);
+          }
+        });
+      });
+    }
+
+    cargarTurnosDesdeAhora();
+  </script>
 </body>
 </html>
