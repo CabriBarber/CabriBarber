@@ -36,22 +36,28 @@ fechaInput.addEventListener("change", async () => {
     }
   }
 
-  // Consultar horarios ocupados desde Firebase
+  
+// Consultar horarios ocupados desde Firebase
   const snapshot = await db.collection("turnos")
     .where("fecha", "==", fecha)
     .get();
 
   const horariosOcupados = snapshot.docs.map(doc => doc.data().hora);
 
-  // Filtrar y agregar al select solo los horarios disponibles
+  // Mostrar todos los horarios, tachando los ocupados
   horarios.forEach(hora => {
-    if (!horariosOcupados.includes(hora)) {
-      const option = document.createElement("option");
-      option.value = hora;
-      option.textContent = hora;
-      horaSelect.appendChild(option);
+    const option = document.createElement("option");
+    option.value = hora;
+    option.textContent = hora;
+    if (horariosOcupados.includes(hora)) {
+      option.disabled = true;
+      option.textContent += " (Ocupado)";
+      option.style.textDecoration = "line-through";
+      option.style.color = "#888";
     }
+    horaSelect.appendChild(option);
   });
+    
 });
 
 // Guardar turno al enviar el formulario
