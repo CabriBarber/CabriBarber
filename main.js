@@ -19,8 +19,54 @@ fechaInput.min = hoy;
 const horaSelect = document.getElementById("hora");
 
 // Validar domingos
+
 fechaInput.addEventListener("change", async () => {
-  const fechaSeleccionada = new Date(fechaInput.value);
+  const ahora = new Date();
+  const [año, mes, día] = fechaInput.value.split("-");
+  const fechaSeleccionada = new Date(año, mes - 1, día);
+
+  // Validar domingos
+  if (fechaSeleccionada.getDay() === 0) {
+    alert("No se pueden reservar turnos los domingos.");
+    fechaInput.value = "";
+    horaSelect.innerHTML = "";
+    return;
+  }
+
+  // Validar que no se pueda elegir el mismo día si la hora ya pasó
+  if (
+    fechaSeleccionada.toDateString() === ahora.toDateString()
+  ) {
+    const horaActual = ahora.getHours() * 60 + ahora.getMinutes();
+
+    // Supongamos que los turnos comienzan a las 9:00 y terminan a las 18:00
+    const turnosDisponibles = [
+      "09:00", "10:00", "11:00", "12:00",
+      "13:00", "14:00", "15:00", "16:00",
+      "17:00", "18:00"
+    ];
+
+    const opcionesValidas = turnosDisponibles.filter(hora => {
+      const [h, m] = hora.split(":").map(Number);
+      return (h * 60 + m) > horaActual;
+    });
+
+    if (opcionesValidas.length === 0) {
+      alert("Ya no hay turnos disponibles para hoy.");
+      fechaInput.value = "";
+      horaSelect.innerHTML = "";
+      return;
+    }
+
+    horaSelect.innerHTML = opcionesValidas.map(hora =>
+      `<option value="${hora}">${hora}</option>`
+    ).join("");
+
+    return;
+  }
+
+  const [año, mes, día] = fechaInput.value.split("-");
+  const fechaSeleccionada = new Date(año, mes - 1, día);
   if (fechaSeleccionada.getDay() === 0) {
     alert("No se pueden reservar turnos los domingos.");
     fechaInput.value = "";
