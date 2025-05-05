@@ -47,7 +47,9 @@
               <p><strong>Servicio:</strong> ${data.servicio}</p>
               <p><strong>Fecha:</strong> ${data.fecha}</p>
               <p><strong>Hora:</strong> ${data.hora}</p>
-            `;
+              <button onclick="eliminarTurno('${doc.id}')" class="mt-2 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded">
+                Eliminar
+              </button>`;
             contenedor.appendChild(div);
           }
         });
@@ -60,7 +62,20 @@
       });
     }
 
+    
+    function eliminarTurno(id) {
+      if (confirm("¿Seguro que querés eliminar este turno?")) {
+        db.collection("turnos").doc(id).delete().then(() => {
+          cargarTurnosDesdeAhora();
+        }).catch(err => {
+          alert("Error al eliminar el turno.");
+          console.error(err);
+        });
+      }
+    }
+
     cargarTurnosDesdeAhora();
+    
   </script>
 </body>
 </html>
