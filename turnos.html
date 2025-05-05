@@ -28,24 +28,28 @@
 
     async function cargarTurnos() {
       const contenedor = document.getElementById("turnos");
-      const snapshot = await db.collection("turnos").orderBy("fecha").orderBy("hora").get();
-      if (snapshot.empty) {
-        contenedor.innerHTML = "<p class='text-center text-gray-400'>No hay turnos registrados.</p>";
-        return;
-      }
+      try {
+        const snapshot = await db.collection("turnos").orderBy("fecha").orderBy("hora").get();
+        if (snapshot.empty) {
+          contenedor.innerHTML = "<p class='text-center text-gray-400'>No hay turnos registrados.</p>";
+          return;
+        }
 
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className = "bg-neutral-800 p-4 rounded shadow";
-        div.innerHTML = `
-          <p><strong>Nombre:</strong> ${data.nombre}</p>
-          <p><strong>Servicio:</strong> ${data.servicio}</p>
-          <p><strong>Fecha:</strong> ${data.fecha}</p>
-          <p><strong>Hora:</strong> ${data.hora}</p>
-        `;
-        contenedor.appendChild(div);
-      });
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.className = "bg-neutral-800 p-4 rounded shadow";
+          div.innerHTML = `
+            <p><strong>Nombre:</strong> ${data.nombre}</p>
+            <p><strong>Servicio:</strong> ${data.servicio}</p>
+            <p><strong>Fecha:</strong> ${data.fecha}</p>
+            <p><strong>Hora:</strong> ${data.hora}</p>
+          `;
+          contenedor.appendChild(div);
+        });
+      } catch (error) {
+        contenedor.innerHTML = "<p class='text-center text-red-400'>Error al cargar turnos. Verificá la conexión a Firebase.</p>";
+      }
     }
 
     cargarTurnos();
