@@ -28,15 +28,18 @@
     const contenedor = document.getElementById("turnos");
 
     function cargarTurnosDesdeAhora() {
-      contenedor.innerHTML = "";
+      contenedor.innerHTML = "<p class='text-center'>Cargando turnos...</p>";
       const hoy = new Date();
       const hoyISO = hoy.toISOString().split("T")[0];
       const ahoraHora = hoy.toTimeString().split(":").slice(0,2).join(":");
 
-      db.collection("turnos").orderBy("fecha").orderBy("hora").get().then(snapshot => {
+      db.collection("turnos").orderBy("fecha").get().then(snapshot => {
+        contenedor.innerHTML = "";
+        let encontrado = false;
         snapshot.forEach(doc => {
           const data = doc.data();
           if (data.fecha > hoyISO || (data.fecha === hoyISO && data.hora >= ahoraHora)) {
+            encontrado = true;
             const div = document.createElement("div");
             div.className = "bg-gray-800 p-4 rounded shadow";
             div.innerHTML = `
@@ -48,6 +51,12 @@
             contenedor.appendChild(div);
           }
         });
+        if (!encontrado) {
+          contenedor.innerHTML = "<p class='text-center text-gray-400'>No hay turnos reservados desde este momento.</p>";
+        }
+      }).catch(error => {
+        console.error("Error al cargar turnos:", error);
+        contenedor.innerHTML = "<p class='text-center text-red-500'>Error al cargar turnos.</p>";
       });
     }
 
