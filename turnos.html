@@ -55,8 +55,9 @@
 
         // Ordenar por fecha y hora
         turnosValidos.sort((a, b) => {
-          if (a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
-          return a.hora.localeCompare(b.hora);
+          const dateA = new Date(`${a.fecha}T${a.hora}`);
+          const dateB = new Date(`${b.fecha}T${b.hora}`);
+          return dateA - dateB;
         });
 
         contenedor.innerHTML = "";
