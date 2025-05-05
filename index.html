@@ -1,34 +1,57 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Cabri Barber - Reservá tu turno</title>
+  <title>Cabri Barber</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Urbanist', sans-serif;
+      background-image: url('https://www.transparenttextures.com/patterns/asfalt-light.png');
+      background-color: #0f0f0f;
+      background-blend-mode: multiply;
+      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
+    }
+    h1, h2, h3 {
+      font-family: 'Bebas Neue', cursive;
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
-<body class="bg-neutral-900 text-white p-6">
-  <div class="max-w-lg mx-auto">
-    <h1 class="text-4xl font-bold mb-6 text-center text-red-500">Reservá tu Turno</h1>
-    
-    <label for="nombre" class="block mb-2">Tu nombre:</label>
-    <input type="text" id="nombre" class="w-full p-2 mb-4 text-black">
+<body class="bg-neutral-900 text-white min-h-screen">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <header class="text-center mb-10">
+      <img src="logo.png" alt="Logo Cabri Barber" class="mx-auto w-24 h-24 rounded-full shadow-lg">
+      <h1 class="text-5xl mt-4 font-bold tracking-widest text-red-500 drop-shadow">Cabri Barber</h1>
+      <p class="text-lg text-gray-300">Tu estilo, nuestra precisión</p>
+    </header>
 
-    <label for="servicio" class="block mb-2">Seleccioná un servicio:</label>
-    <select id="servicio" class="w-full p-2 mb-4 text-black">
-      <option value="Corte de pelo">Corte de pelo</option>
-      <option value="Barba">Barba</option>
-      <option value="Corte y barba">Corte y barba</option>
-    </select>
+    <section class="bg-neutral-800 p-6 rounded shadow">
+      <h2 class="text-2xl font-bold mb-4 border-b border-gray-600 pb-2">Reservá tu Turno</h2>
+      
+      <label for="nombre" class="block mb-2">Tu nombre:</label>
+      <input type="text" id="nombre" class="w-full p-2 mb-4 text-black rounded">
 
-    <label for="fecha" class="block mb-2">Seleccioná una fecha:</label>
-    <input type="date" id="fecha" class="w-full p-2 mb-4 text-black">
+      <label for="servicio" class="block mb-2">Seleccioná un servicio:</label>
+      <select id="servicio" class="w-full p-2 mb-4 text-black rounded">
+        <option value="Corte de pelo">Corte de pelo</option>
+        <option value="Barba">Barba</option>
+        <option value="Corte y barba">Corte y barba</option>
+      </select>
 
-    <label for="hora" class="block mb-2">Seleccioná un horario:</label>
-    <select id="hora" class="w-full p-2 mb-6 text-black"></select>
+      <label for="fecha" class="block mb-2">Seleccioná una fecha:</label>
+      <input type="date" id="fecha" class="w-full p-2 mb-4 text-black rounded">
 
-    <button id="reservar" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 w-full rounded">Reservar turno</button>
+      <label for="hora" class="block mb-2">Seleccioná un horario:</label>
+      <select id="hora" class="w-full p-2 mb-6 text-black rounded"></select>
+
+      <button id="reservar" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 w-full rounded">Reservar turno</button>
+    </section>
   </div>
 
   <script src="main.js"></script>
@@ -59,7 +82,10 @@
       await db.collection("turnos").add({ nombre, servicio, fecha, hora });
 
       const mensaje = encodeURIComponent(
-        `Nombre: ${nombre}\nServicio: ${servicio}\nFecha: ${fecha}\nHora: ${hora}`
+        `Nombre: ${nombre}
+Servicio: ${servicio}
+Fecha: ${fecha}
+Hora: ${hora}`
       );
       window.open(`https://wa.me/5491157487583?text=${mensaje}`, "_blank");
     });
