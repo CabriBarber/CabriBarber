@@ -50,27 +50,3 @@ fechaInput.addEventListener("change", async () => {
     horaSelect.appendChild(opcion);
   }
 });
-
-// Envío de WhatsApp y guardado en Firebase
-document.getElementById("reservar").addEventListener("click", async () => {
-  const nombre = document.getElementById("nombre").value;
-  const servicio = document.getElementById("servicio").value;
-  const fecha = document.getElementById("fecha").value;
-  const hora = document.getElementById("hora").value;
-
-  if (!nombre || !servicio || !fecha || !hora) {
-    alert("Completá todos los campos.");
-    return;
-  }
-
-  try {
-    await db.collection("turnos").add({ nombre, servicio, fecha, hora });
-
-    const mensaje = encodeURIComponent(
-      `Nombre: ${nombre}\nServicio: ${servicio}\nHora: ${hora}\nFecha: ${fecha}`
-    );
-    window.open(`https://wa.me/5491157487583?text=${mensaje}`, "_blank");
-  } catch (e) {
-    alert("Error al guardar el turno. Verificá conexión o Firebase.");
-  }
-});
