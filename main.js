@@ -21,37 +21,41 @@ fechaInput.min = hoy;
 
 fechaInput.addEventListener("change", async () => {
   const fecha = fechaInput.value;
+  const fechaSeleccionada = new Date(fecha);
   const hoyDate = new Date();
-  const fechaSeleccionada = new Date(fecha + "T00:00");
 
+  // Limpiar opciones anteriores
   horaSelect.innerHTML = "<option value=''>Seleccioná un horario</option>";
 
+  // Obtener turnos ocupados de Firebase
   const ocupadosSnapshot = await db.collection("turnos")
     .where("fecha", "==", fecha)
     .get();
 
   const horariosOcupados = ocupadosSnapshot.docs.map(doc => doc.data().hora);
 
+  // Generar todos los horarios posibles
   for (let h = 10; h < 21; h++) {
     for (let m = 0; m < 60; m += 30) {
       const hour = h.toString().padStart(2, '0');
       const minute = m.toString().padStart(2, '0');
       const horaCompleta = `${hour}:${minute}`;
-
-      const horarioFecha = new Date(`${fecha}T${horaCompleta}`);
-
-      const options = { hour: '2-digit', minute: '2-digit', hour12: false };
-      const horaLabel = horarioFecha.toLocaleTimeString('es-AR', options).slice(0, 5);
+      
+      // Formatear a AM/PM
+      const date = new Date(`${fecha}T${horaCompleta}`);
+      const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+      const horaAMPM = date.toLocaleTimeString('en-US', options);
 
       let deshabilitado = false;
-      let texto = horaLabel;
+      let texto = horaAMPM;
 
-      const esHoy = fecha === hoy;
-      if (esHoy && horarioFecha < hoyDate) {
+      // Marcar como pasado si la fecha es hoy y el horario ya pasó
+      if (fecha === hoy && date < hoyDate) {
         deshabilitado = true;
         texto += " (Pasado)";
       }
 
+      // Marcar como ocupado si ya está reservado
       if (horariosOcupados.includes(horaCompleta)) {
         deshabilitado = true;
         texto += " (Ocupado)";

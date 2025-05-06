@@ -2,139 +2,55 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Urbanist:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background-image: url('https://www.transparenttextures.com/patterns/asfalt-light.png');
-      background-color: #0f0f0f;
-      background-blend-mode: multiply;
-    }
-    body {
-      font-family: 'Urbanist', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1a1a1a);
-    }
-    h1, h2, h3 {
-      font-family: 'Bebas Neue', cursive;
-      letter-spacing: 1px;
-    }
-  </style>
   <meta charset="UTF-8">
+  <title>Cabri Barber - Reservá tu turno</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cabri Barber</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-neutral-900 text-white min-h-screen font-sans">
-  <div class="max-w-2xl mx-auto px-4 py-8">
-    <header class="text-center mb-10">
-      <img src="logo.png" alt="Logo Cabri Barber" class="mx-auto w-24 h-24 rounded-full shadow-lg">
-      <h1 class="text-5xl mt-4 font-bold tracking-widest text-red-500 drop-shadow">Cabri Barber</h1>
-      <p class="text-lg text-gray-300">Tu estilo, nuestra precisión</p>
-    </header>
-
+<body class="bg-neutral-900 text-white p-6">
+  <div class="max-w-lg mx-auto">
+    <h1 class="text-4xl font-bold mb-6 text-center text-red-500">Reservá tu Turno</h1>
     
-<section class="mb-8">
-  <h2 class="text-3xl font-bold text-white mb-3 border-b-2 border-red-500 inline-block pb-1">Servicios</h2>
-  <table class="w-full text-left border border-gray-700">
-    <thead class="bg-gray-800">
-      <tr>
-        <th class="px-4 py-2">Servicio</th>
-        <th class="px-4 py-2">Precio</th>
-      </tr>
-    </thead>
-    <tbody class="bg-gray-900">
-      <tr class="border-t border-gray-700">
-        <td class="px-4 py-2">Corte</td>
-        <td class="px-4 py-2">$7.000</td>
-      </tr>
-      <tr class="border-t border-gray-700">
-        <td class="px-4 py-2">Corte + Barba</td>
-        <td class="px-4 py-2">$8.000</td>
-      </tr>
-      <tr class="border-t border-gray-700">
-        <td class="px-4 py-2">Claritos</td>
-        <td class="px-4 py-2">$25.000</td>
-      </tr>
-      <tr class="border-t border-gray-700">
-        <td class="px-4 py-2">Global</td>
-        <td class="px-4 py-2">$30.000</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
+    <label for="nombre" class="block mb-2">Tu nombre:</label>
+    <input type="text" id="nombre" class="w-full p-2 mb-4 text-black">
 
+    <label for="servicio" class="block mb-2">Seleccioná un servicio:</label>
+    <select id="servicio" class="w-full p-2 mb-4 text-black">
+      <option value="Corte de pelo">Corte de pelo</option>
+      <option value="Barba">Barba</option>
+      <option value="Corte y barba">Corte y barba</option>
+    </select>
 
-    <section>
-      <h2 class="text-3xl font-bold text-white mb-4 border-b-2 border-red-500 inline-block pb-1">Reservá tu turno</h2>
-      <form id="turnoForm" class="space-y-4">
-        <input type="text" id="nombre" required placeholder="Tu nombre" class="w-full p-3 rounded bg-neutral-800 text-white">
-        
+    <label for="fecha" class="block mb-2">Seleccioná una fecha:</label>
+    <input type="date" id="fecha" class="w-full p-2 mb-4 text-black">
 
-<select id="servicio" class="w-full p-2 mb-4 bg-neutral-900 text-white rounded">
-  <option value="Corte">Corte</option>
-  <option value="Corte + Barba">Corte + Barba</option>
-  <option value="Claritos">Claritos</option>
-  <option value="Global">Global</option>
-</select>
+    <label for="hora" class="block mb-2">Seleccioná un horario:</label>
+    <select id="hora" class="w-full p-2 mb-6 text-black"></select>
 
-
-        <input type="date" id="fecha" required class="w-full p-3 rounded bg-neutral-800 text-white">
-        <select id="hora" required class="w-full p-3 rounded bg-neutral-800 text-white">
-          <option value="">Seleccioná un horario</option>
-        </select>
-        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded">
-          Reservar
-        </button>
-      </form>
-      <p id="mensaje" class="text-center mt-4 text-green-400 font-medium"></p>
-    </section>
+    <button id="reservar" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 w-full rounded">Reservar turno</button>
   </div>
 
-  
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
-<script src="main.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBlJvTey3YXLMr0lVyUGzlcYhiFGzAFWN0",
-    authDomain: "cabriweb.firebaseapp.com",
-    projectId: "cabriweb",
-    storageBucket: "cabriweb.firebasestorage.app",
-    messagingSenderId: "1083893391061",
-    appId: "1:1083893391061:web:14c6fd57798d3705f90c5c",
-    measurementId: "G-686H031B6Z"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  <script src="main.js"></script>
+  <script>
+    document.getElementById("reservar").addEventListener("click", async () => {
+      const nombre = document.getElementById("nombre").value;
+      const servicio = document.getElementById("servicio").value;
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
 
-  document.getElementById("reservar").addEventListener("click", async () => {
-    const nombre = document.getElementById("nombre").value;
-    const servicio = document.getElementById("servicio").value;
-    const fecha = document.getElementById("fecha").value;
-    const hora = document.getElementById("hora").value;
+      if (!nombre || !servicio || !fecha || !hora) {
+        alert("Completá todos los campos.");
+        return;
+      }
 
-    if (!nombre || !servicio || !fecha || !hora) {
-      alert("Completá todos los campos.");
-      return;
-    }
-
-    try {
+      const db = firebase.firestore();
       await db.collection("turnos").add({ nombre, servicio, fecha, hora });
 
-      const mensaje = encodeURIComponent(
-        `Nombre: ${nombre}
-Servicio: ${servicio}
-Fecha: ${fecha}
-Hora: ${hora}`
-      );
-      window.open(`https://wa.me/5491157487583?text=${mensaje}`, "_blank");
-    } catch (e) {
-      alert("Error al guardar el turno. Verificá conexión o Firebase.");
-    }
-  });
-</script>
+      const mensaje = encodeURIComponent(`Hola! Soy ${nombre} y quiero reservar un turno para ${servicio} el ${fecha} a las ${hora}.`);
+      window.open(`https://wa.me/5490000000000?text=${mensaje}`, "_blank");
+    });
+  </script>
 </body>
 </html>
-
-
-
