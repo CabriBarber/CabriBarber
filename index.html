@@ -67,18 +67,21 @@
       <h2 class="text-3xl font-bold text-white mb-4 border-b-2 border-red-500 inline-block pb-1">Reservá tu turno</h2>
       <form id="turnoForm" class="space-y-4">
         <input type="text" id="nombre" required placeholder="Tu nombre" class="w-full p-3 rounded bg-neutral-800 text-white">
-        <select id="servicio" required class="w-full p-3 rounded bg-neutral-800 text-white">
-          <option value="">Seleccioná un servicio</option>
-          <option>Corte</option>
-          <option>Corte + Barba</option>
-          <option>Claritos</option>
-          <option>Global</option>
-        </select>
+        
+
+<select id="servicio" class="w-full p-2 mb-4 bg-neutral-900 text-white rounded">
+  <option value="Corte">Corte</option>
+  <option value="Corte + Barba">Corte + Barba</option>
+  <option value="Claritos">Claritos</option>
+  <option value="Global">Global</option>
+</select>
+
+
         <input type="date" id="fecha" required class="w-full p-3 rounded bg-neutral-800 text-white">
         <select id="hora" required class="w-full p-3 rounded bg-neutral-800 text-white">
           <option value="">Seleccioná un horario</option>
         </select>
-        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded">
+        <button type="button" id="reservar" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded">
           Reservar
         </button>
       </form>
@@ -89,7 +92,49 @@
   
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="main.js"></script>
     
+<script src="main.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBlJvTey3YXLMr0lVyUGzlcYhiFGzAFWN0",
+    authDomain: "cabriweb.firebaseapp.com",
+    projectId: "cabriweb",
+    storageBucket: "cabriweb.firebasestorage.app",
+    messagingSenderId: "1083893391061",
+    appId: "1:1083893391061:web:14c6fd57798d3705f90c5c",
+    measurementId: "G-686H031B6Z"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  document.getElementById("reservar").addEventListener("click", async () => {
+    const nombre = document.getElementById("nombre").value;
+    const servicio = document.getElementById("servicio").value;
+    const fecha = document.getElementById("fecha").value;
+    const hora = document.getElementById("hora").value;
+
+    if (!nombre || !servicio || !fecha || !hora) {
+      alert("Completá todos los campos.");
+      return;
+    }
+
+    try {
+      await db.collection("turnos").add({ nombre, servicio, fecha, hora });
+
+      const mensaje = encodeURIComponent(
+        `Nombre: ${nombre}
+Servicio: ${servicio}
+Fecha: ${fecha}
+Hora: ${hora}`
+      );
+      window.open(`https://wa.me/5491157487583?text=${mensaje}`, "_blank");
+    } catch (e) {
+      alert("Error al guardar el turno. Verificá conexión o Firebase.");
+    }
+  });
+</script>
 </body>
 </html>
+
+
+
