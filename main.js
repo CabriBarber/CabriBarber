@@ -30,7 +30,37 @@ fechaInput.addEventListener("change", async () => {
     .where("fecha", "==", fecha)
     .get();
 
-  const horariosOcupados = ocupadosSnapshot.docs.map(doc => doc.data().hora);
+  const horariosOcupados = ocupadosSnapshot;
+
+  const horarios = [];
+  let start = new Date();
+  start.setHours(10, 0, 0, 0);
+  const end = new Date();
+  end.setHours(21, 0, 0, 0);
+
+  while (start <= end) {
+    horarios.push(new Date(start));
+    start.setMinutes(start.getMinutes() + 30);
+  }
+
+  const ahora = new Date();
+  horarios.forEach(horario => {
+    const horaTexto = horario.toTimeString().substring(0, 5);
+    const option = document.createElement("option");
+    option.value = horaTexto;
+    option.textContent = horaTexto;
+
+    const ocupado = horariosOcupados.docs.some(doc => doc.data().hora === horaTexto);
+    const pasada = fechaSeleccionada.toDateString() === hoyDate.toDateString() && horario < ahora;
+
+    if (ocupado || pasada) {
+      option.disabled = true;
+      option.style.textDecoration = "line-through";
+    }
+
+    horaSelect.appendChild(option);
+  });
+
 
   for (let h = 10; h <= 20; h++) {
     const horaTexto = h.toString().padStart(2, '0') + ":00";
@@ -49,4 +79,33 @@ fechaInput.addEventListener("change", async () => {
 
     horaSelect.appendChild(opcion);
   }
+});
+
+
+
+document.getElementById("reservar").addEventListener("click", async () => {
+  const nombre = document.getElementById("nombre").value;
+  const servicio = document.getElementById("servicio").value;
+  const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
+
+  if (!nombre || !servicio || !fecha || !hora) {
+    alert("Por favor completá todos los campos.");
+    return;
+  }
+
+  await db.collection("turnos").add({
+    nombre,
+    servicio,
+    fecha,
+    hora,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  const mensaje = `Nombre: ${nombre}%0AServicio: ${servicio}%0AFecha: ${fecha}%0AHora: ${hora}`;
+  const numero = "1157487583";
+  const url = `https://wa.me/549${numero}?text=${mensaje}`;
+
+  alert("¡Tu turno se reservó con éxito!");
+  window.open(url, "_blank");
 });

@@ -50,5 +50,23 @@
 
     cargarTurnos();
   </script>
+
+<script>
+  const listaTurnos = document.getElementById("lista-turnos");
+
+  db.collection("turnos")
+    .orderBy("fecha")
+    .orderBy("hora")
+    .onSnapshot(snapshot => {
+      listaTurnos.innerHTML = "";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const item = document.createElement("li");
+        item.textContent = `${data.fecha} - ${data.hora} hs - ${data.nombre} (${data.servicio})`;
+        listaTurnos.appendChild(item);
+      });
+    });
+</script>
 </body>
+
 </html>
