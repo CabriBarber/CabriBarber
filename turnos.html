@@ -1,31 +1,30 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Turnos Actuales</title>
+  <title>Turnos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body class="bg-neutral-900 text-white p-6">
-  <h1 class="text-3xl font-bold mb-6 text-center">Turnos Actuales y Futuros</h1>
-  
-<div class="overflow-x-auto max-w-4xl mx-auto">
-  <table class="min-w-full text-sm text-white bg-neutral-800 rounded-lg overflow-hidden">
-    <thead>
-      <tr class="bg-neutral-700 text-left text-xs uppercase tracking-wider">
-        <th class="px-4 py-2">Nombre</th>
-        <th class="px-4 py-2">Servicio</th>
-        <th class="px-4 py-2">Fecha</th>
-        <th class="px-4 py-2">Hora</th>
-        <th class="px-4 py-2">Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="turnosBody"></tbody>
-  </table>
-</div>
-
+  <h1 class="text-3xl font-bold mb-6 text-center">Turnos Reservados</h1>
+  <div class="overflow-x-auto max-w-4xl mx-auto">
+    <table class="min-w-full text-sm text-white bg-neutral-800 rounded-lg overflow-hidden">
+      <thead>
+        <tr class="bg-neutral-700 text-left text-xs uppercase tracking-wider">
+          <th class="px-4 py-2">Nombre</th>
+          <th class="px-4 py-2">Servicio</th>
+          <th class="px-4 py-2">Fecha</th>
+          <th class="px-4 py-2">Hora</th>
+          <th class="px-4 py-2">Eliminar</th>
+        </tr>
+      </thead>
+      <tbody id="turnosBody"></tbody>
+    </table>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -39,129 +38,40 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    const contenedor = document.getElementById("turnos");
+    const turnosBody = document.getElementById("turnosBody");
 
     function cargarTurnos() {
-      contenedor.innerHTML = "<p class='text-center'>Cargando turnos...</p>";
-
-      const hoy = new Date();
-      const hoyISO = hoy.toISOString().split("T")[0];
-      const ahoraHora = hoy.toTimeString().split(":").slice(0,2).join(":");
-
-      db.collection("turnos").get().then(snapshot => {
-        const turnosValidos = [];
+      db.collection("turnos").orderBy("fecha").get().then(snapshot => {
+        turnosBody.innerHTML = "";
         snapshot.forEach(doc => {
-          const data = doc.data();
-          const id = doc.id;
+          const turno = doc.data();
+          const row = document.createElement("tr");
+          row.classList.add("border-b", "border-neutral-700");
 
-          // Eliminar si es fecha anterior a hoy
-          if (data.fecha < hoyISO) {
-            db.collection("turnos").doc(id).delete();
-          } else {
-            // Si es hoy pero la hora ya pasó, también eliminar
-            if (data.fecha === hoyISO && data.hora < ahoraHora) {
-              db.collection("turnos").doc(id).delete();
-            } else {
-              turnosValidos.push({ id, ...data });
-            }
-          }
+          row.innerHTML = `
+            <td class="px-4 py-2">${turno.nombre}</td>
+            <td class="px-4 py-2">${turno.servicio}</td>
+            <td class="px-4 py-2">${turno.fecha}</td>
+            <td class="px-4 py-2">${turno.hora}</td>
+            <td class="px-4 py-2">
+              <button onclick="eliminarTurno('${doc.id}')" class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded">Eliminar</button>
+            </td>
+          `;
+          turnosBody.appendChild(row);
         });
-
-        // Ordenar por fecha y hora
-        turnosValidos.sort((a, b) => {
-          if (a.fecha !== b.fecha) return a.fecha.localeCompare(b.fecha);
-          return a.hora.localeCompare(b.hora);
-        });
-
-        contenedor.innerHTML = "";
-        if (turnosValidos.length === 0) {
-          contenedor.innerHTML = "<p class='text-center text-gray-400'>No hay turnos activos.</p>";
-        } else {
-          turnosValidos.forEach(data => {
-            const div = document.createElement("div");
-            div.className = "bg-gray-800 p-4 rounded shadow";
-            div.innerHTML = `
-              <p><strong>Nombre:</strong> ${data.nombre}</p>
-              <p><strong>Servicio:</strong> ${data.servicio}</p>
-              <p><strong>Fecha:</strong> ${data.fecha}</p>
-              <p><strong>Hora:</strong> ${data.hora}</p>
-              <button onclick="eliminarTurno('${data.id}')" class="mt-2 bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded">
-                Eliminar
-              </button>
-            `;
-            contenedor.appendChild(div);
-          });
-        }
       });
     }
 
     function eliminarTurno(id) {
-      if (confirm("¿Seguro que querés eliminar este turno?")) {
+      if (confirm("¿Eliminar este turno?")) {
         db.collection("turnos").doc(id).delete().then(() => {
+          alert("Turno eliminado");
           cargarTurnos();
-        }).catch(err => {
-          alert("Error al eliminar el turno.");
-          console.error(err);
         });
       }
     }
 
     cargarTurnos();
   </script>
-
-<script>
-const db = firebase.firestore();
-const turnosBody = document.getElementById("turnosBody");
-
-function renderTurnos() {
-  db.collection("turnos").orderBy("fecha").get().then(snapshot => {
-    turnosBody.innerHTML = "";
-    snapshot.forEach(doc => {
-      const turno = doc.data();
-      const id = doc.id;
-      const row = document.createElement("tr");
-      row.classList.add("border-b", "border-neutral-700");
-
-      row.innerHTML = `
-        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.nombre}" data-campo="nombre" data-id="${id}"></td>
-        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.servicio}" data-campo="servicio" data-id="${id}"></td>
-        <td class="px-4 py-2"><input type="date" class="bg-neutral-800 text-white w-full" value="${turno.fecha}" data-campo="fecha" data-id="${id}"></td>
-        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.hora}" data-campo="hora" data-id="${id}"></td>
-        <td class="px-4 py-2 space-x-2">
-          <button onclick="guardarCambios('${id}')" class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded">Guardar</button>
-          <button onclick="eliminarTurno('${id}')" class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded">Eliminar</button>
-        </td>
-      `;
-      turnosBody.appendChild(row);
-    });
-  });
-}
-
-function guardarCambios(id) {
-  const campos = document.querySelectorAll(`[data-id='${id}']`);
-  const nuevoTurno = {};
-  campos.forEach(input => {
-    nuevoTurno[input.dataset.campo] = input.value;
-  });
-
-  db.collection("turnos").doc(id).update(nuevoTurno).then(() => {
-    alert("Turno actualizado");
-    renderTurnos();
-  });
-}
-
-function eliminarTurno(id) {
-  if (confirm("¿Estás seguro de que querés eliminar este turno?")) {
-    db.collection("turnos").doc(id).delete().then(() => {
-      alert("Turno eliminado");
-      renderTurnos();
-    });
-  }
-}
-
-renderTurnos();
-</script>
-
 </body>
 </html>

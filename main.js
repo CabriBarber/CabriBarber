@@ -109,3 +109,39 @@ document.getElementById("reservar").addEventListener("click", async () => {
   alert("¡Tu turno se reservó con éxito!");
   window.open(url, "_blank");
 });
+
+
+
+document.getElementById("reservar").addEventListener("click", function(e) {
+  e.preventDefault();
+
+  const nombre = document.getElementById("nombre").value;
+  const servicio = document.getElementById("servicio").value;
+  const hora = document.getElementById("hora").value;
+  const fecha = document.getElementById("fecha").value;
+
+  if (!nombre || !servicio || !hora || !fecha) {
+    alert("Por favor completá todos los campos.");
+    return;
+  }
+
+  document.getElementById("confNombre").textContent = nombre;
+  document.getElementById("confServicio").textContent = servicio;
+  document.getElementById("confHora").textContent = hora;
+  document.getElementById("confFecha").textContent = fecha;
+
+  document.getElementById("modalConfirmacion").style.display = "flex";
+});
+
+document.getElementById("btnConfirmarTurno").addEventListener("click", function() {
+  const nombre = document.getElementById("nombre").value;
+  const servicio = document.getElementById("servicio").value;
+  const hora = document.getElementById("hora").value;
+  const fecha = document.getElementById("fecha").value;
+
+  const mensaje = `Hola ${nombre}, tu turno en CabriBarber está reservado:%0A- Servicio: ${servicio}%0A- Hora: ${hora}%0A- Día: ${fecha}`;
+  const telefono = "5491122334455"; // Número de prueba
+
+  window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
+  document.getElementById("modalConfirmacion").style.display = "none";
+});
