@@ -20,25 +20,32 @@ const hoy = new Date().toISOString().split("T")[0];
 fechaInput.min = hoy;
 
 
+
 fechaInput.addEventListener("change", async () => {
   const fecha = fechaInput.value;
   const fechaSeleccionada = new Date(fecha);
   const hoyDate = new Date();
+  hoyDate.setHours(0, 0, 0, 0);
+
   horaSelect.innerHTML = "<option value=''>Seleccioná un horario</option>";
 
   const ocupadosSnapshot = await db.collection("turnos").where("fecha", "==", fecha).get();
   const horariosOcupados = ocupadosSnapshot.docs.map(doc => doc.data().hora);
 
   const ahora = new Date();
-  const esHoy = fechaSeleccionada.toDateString() === hoyDate.toDateString();
+  const esHoy = fechaSeleccionada.toDateString() === new Date().toDateString();
   const horaActualDecimal = ahora.getHours() + ahora.getMinutes() / 60;
 
-  const todosLosHorarios = [
-    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-    "18:00", "18:30", "19:00", "19:30", "20:00"
-  ];
+  
+const todosLosHorarios = [
+  "10:00", "10:30", "11:00", "11:30",
+  "12:00", "12:30", "13:00", "13:30",
+  "14:00", "14:30", "15:00", "15:30",
+  "16:00", "16:30", "17:00", "17:30",
+  "18:00", "18:30", "19:00", "19:30",
+  "20:00", "20:30"
+];
+
 
   todosLosHorarios.forEach(hora => {
     const partes = hora.split(":");
@@ -56,6 +63,13 @@ fechaInput.addEventListener("change", async () => {
     }
 
     horaSelect.appendChild(option);
+  });
+});
+
+// Configuramos fecha mínima para hoy
+const hoy = new Date().toISOString().split("T")[0];
+fechaInput.min = hoy;
+
   });
 });
 
