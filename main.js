@@ -21,22 +21,7 @@ fechaInput.min = hoy;
 
 
 
-fechaInput.addEventListener("change", async () => {
-  const fecha = fechaInput.value;
-  const fechaSeleccionada = new Date(fecha);
-  const hoyDate = new Date();
-  hoyDate.setHours(0, 0, 0, 0);
 
-  horaSelect.innerHTML = "<option value=''>Seleccioná un horario</option>";
-
-  const ocupadosSnapshot = await db.collection("turnos").where("fecha", "==", fecha).get();
-  const horariosOcupados = ocupadosSnapshot.docs.map(doc => doc.data().hora);
-
-  const ahora = new Date();
-  const esHoy = fechaSeleccionada.toDateString() === new Date().toDateString();
-  const horaActualDecimal = ahora.getHours() + ahora.getMinutes() / 60;
-
-  
 const todosLosHorarios = [
   "10:00", "10:30", "11:00", "11:30",
   "12:00", "12:30", "13:00", "13:30",
@@ -46,10 +31,24 @@ const todosLosHorarios = [
   "20:00", "20:30"
 ];
 
+fechaInput.addEventListener("change", async () => {
+  const fecha = fechaInput.value;
+  const fechaSeleccionada = new Date(fecha);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const esHoy = fechaSeleccionada.toDateString() === hoy.toDateString();
+
+  horaSelect.innerHTML = "<option value=''>Seleccioná un horario</option>";
+
+  const ocupadosSnapshot = await db.collection("turnos").where("fecha", "==", fecha).get();
+  const horariosOcupados = ocupadosSnapshot.docs.map(doc => doc.data().hora);
+
+  const ahora = new Date();
+  const horaActualDecimal = ahora.getHours() + ahora.getMinutes() / 60;
 
   todosLosHorarios.forEach(hora => {
-    const partes = hora.split(":");
-    const horaDecimal = parseInt(partes[0]) + parseInt(partes[1]) / 60;
+    const [h, m] = hora.split(":").map(Number);
+    const horaDecimal = h + m / 60;
 
     if (esHoy && horaDecimal <= horaActualDecimal) return;
 
@@ -63,6 +62,9 @@ const todosLosHorarios = [
     }
 
     horaSelect.appendChild(option);
+  });
+});
+
   });
 });
 
