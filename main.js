@@ -25,32 +25,40 @@ fechaInput.addEventListener("change", async () => {
   const hoyDate = new Date();
 
   horaSelect.innerHTML = "<option value=''>Seleccioná un horario</option>";
+
+  const ocupadosSnapshot = await db.collection("turnos")
+    .where("fecha", "==", fecha)
+    .get();
+
+  const horariosOcupados = ocupadosSnapshot;
+
+  const horarios = [];
+  let start = new Date();
+  start.setHours(10, 0, 0, 0);
+  const end = new Date();
+  end.setHours(21, 0, 0, 0);
+
+  while (start <= end) {
+    horarios.push(new Date(start));
+    start.setMinutes(start.getMinutes() + 30);
+  }
+
   const ahora = new Date();
-  const esHoy = fechaSeleccionada.toDateString() === hoyDate.toDateString();
-  const horaActual = ahora.getHours();
-
-  const todosLosHorarios = [
-    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
-    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-    "18:00", "18:30", "19:00", "19:30", "20:00"
-  ];
-
-  todosLosHorarios.forEach(hora => {
-    const horaNumero = parseInt(hora.split(":")[0]);
-    const estaOcupado = horariosOcupados.some(doc => doc.data().hora === hora);
-    
-    if (esHoy && horaNumero < horaActual) return;
-
+  horarios.forEach(horario => {
+    const horaTexto = horario.toTimeString().substring(0, 5);
     const option = document.createElement("option");
-    option.value = hora;
-    option.textContent = estaOcupado ? `${hora} - Ocupado` : hora;
-    if (estaOcupado) option.disabled = true;
-    if (estaOcupado) option.style.textDecoration = "line-through";
+    option.value = horaTexto;
+    option.textContent = horaTexto;
+
+    const ocupado = horariosOcupados.docs.some(doc => doc.data().hora === horaTexto);
+    const pasada = fechaSeleccionada.toDateString() === hoyDate.toDateString() && horario < ahora;
+
+    if (ocupado || pasada) {
+      option.disabled = true;
+      option.style.textDecoration = "line-through";
+    }
 
     horaSelect.appendChild(option);
-  });
-horaSelect.appendChild(option);
   });
 
 
@@ -100,40 +108,4 @@ document.getElementById("reservar").addEventListener("click", async () => {
 
   alert("¡Tu turno se reservó con éxito!");
   window.open(url, "_blank");
-});
-
-
-document.getElementById("reservar").addEventListener("click", function(e) {
-  e.preventDefault();
-
-  const nombre = document.getElementById("nombre").value;
-  const servicio = document.getElementById("servicio").value;
-  const hora = document.getElementById("hora").value;
-  const fecha = document.getElementById("fecha").value;
-
-  if (!nombre || !servicio || !hora || !fecha) {
-    alert("Por favor completá todos los campos.");
-    return;
-  }
-
-  document.getElementById("confNombre").textContent = nombre;
-  document.getElementById("confServicio").textContent = servicio;
-  document.getElementById("confHora").textContent = hora;
-  document.getElementById("confFecha").textContent = fecha;
-
-  document.getElementById("modalConfirmacion").style.display = "flex";
-});
-
-document.getElementById("btnConfirmarTurno").addEventListener("click", function() {
-  const nombre = document.getElementById("nombre").value;
-  const servicio = document.getElementById("servicio").value;
-  const hora = document.getElementById("hora").value;
-  const fecha = document.getElementById("fecha").value;
-
-  const mensaje = `Hola ${nombre}, tu turno en CabriBarber está reservado:\nServicio: ${servicio}\nHora: ${hora}\nDía: ${fecha}`;
-  const telefono = "5491122334455"; // Reemplazar con el número real del barbero
-
-  window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, "_blank");
-
-  document.getElementById("modalConfirmacion").style.display = "none";
 });

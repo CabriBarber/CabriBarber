@@ -38,58 +38,6 @@
       measurementId: "G-686H031B6Z"
     };
     firebase.initializeApp(firebaseConfig);
-
-const db = firebase.firestore();
-const turnosBody = document.getElementById("turnosBody");
-
-function renderTurnos() {
-  db.collection("turnos").orderBy("fecha").get().then(snapshot => {
-    turnosBody.innerHTML = "";
-    snapshot.forEach(doc => {
-      const turno = doc.data();
-      const id = doc.id;
-      const row = document.createElement("tr");
-      row.classList.add("border-b", "border-neutral-700");
-
-      row.innerHTML = `
-        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.nombre}" data-campo="nombre" data-id="${id}"></td>
-        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.servicio}" data-campo="servicio" data-id="${id}"></td>
-        <td class="px-4 py-2"><input type="date" class="bg-neutral-800 text-white w-full" value="${turno.fecha}" data-campo="fecha" data-id="${id}"></td>
-        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.hora}" data-campo="hora" data-id="${id}"></td>
-        <td class="px-4 py-2 space-x-2">
-          <button onclick="guardarCambios('${id}')" class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded">Guardar</button>
-          <button onclick="eliminarTurno('${id}')" class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded">Eliminar</button>
-        </td>
-      `;
-      turnosBody.appendChild(row);
-    });
-  });
-}
-
-function guardarCambios(id) {
-  const campos = document.querySelectorAll(`[data-id='${id}']`);
-  const nuevoTurno = {};
-  campos.forEach(input => {
-    nuevoTurno[input.dataset.campo] = input.value;
-  });
-
-  db.collection("turnos").doc(id).update(nuevoTurno).then(() => {
-    alert("Turno actualizado");
-    renderTurnos();
-  });
-}
-
-function eliminarTurno(id) {
-  if (confirm("¿Estás seguro de que querés eliminar este turno?")) {
-    db.collection("turnos").doc(id).delete().then(() => {
-      alert("Turno eliminado");
-      renderTurnos();
-    });
-  }
-}
-
-renderTurnos();
-
     const db = firebase.firestore();
 
     const contenedor = document.getElementById("turnos");
@@ -161,5 +109,59 @@ renderTurnos();
 
     cargarTurnos();
   </script>
+
+<script>
+const db = firebase.firestore();
+const turnosBody = document.getElementById("turnosBody");
+
+function renderTurnos() {
+  db.collection("turnos").orderBy("fecha").get().then(snapshot => {
+    turnosBody.innerHTML = "";
+    snapshot.forEach(doc => {
+      const turno = doc.data();
+      const id = doc.id;
+      const row = document.createElement("tr");
+      row.classList.add("border-b", "border-neutral-700");
+
+      row.innerHTML = `
+        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.nombre}" data-campo="nombre" data-id="${id}"></td>
+        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.servicio}" data-campo="servicio" data-id="${id}"></td>
+        <td class="px-4 py-2"><input type="date" class="bg-neutral-800 text-white w-full" value="${turno.fecha}" data-campo="fecha" data-id="${id}"></td>
+        <td class="px-4 py-2"><input class="bg-neutral-800 text-white w-full" value="${turno.hora}" data-campo="hora" data-id="${id}"></td>
+        <td class="px-4 py-2 space-x-2">
+          <button onclick="guardarCambios('${id}')" class="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded">Guardar</button>
+          <button onclick="eliminarTurno('${id}')" class="bg-red-600 hover:bg-red-700 px-2 py-1 rounded">Eliminar</button>
+        </td>
+      `;
+      turnosBody.appendChild(row);
+    });
+  });
+}
+
+function guardarCambios(id) {
+  const campos = document.querySelectorAll(`[data-id='${id}']`);
+  const nuevoTurno = {};
+  campos.forEach(input => {
+    nuevoTurno[input.dataset.campo] = input.value;
+  });
+
+  db.collection("turnos").doc(id).update(nuevoTurno).then(() => {
+    alert("Turno actualizado");
+    renderTurnos();
+  });
+}
+
+function eliminarTurno(id) {
+  if (confirm("¿Estás seguro de que querés eliminar este turno?")) {
+    db.collection("turnos").doc(id).delete().then(() => {
+      alert("Turno eliminado");
+      renderTurnos();
+    });
+  }
+}
+
+renderTurnos();
+</script>
+
 </body>
 </html>
