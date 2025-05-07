@@ -19,46 +19,46 @@ const horaSelect = document.getElementById("hora");
 const hoy = new Date().toISOString().split("T")[0];
 fechaInput.min = hoy;
 
+
 fechaInput.addEventListener("change", async () => {
   const fecha = fechaInput.value;
   const fechaSeleccionada = new Date(fecha);
   const hoyDate = new Date();
-
   horaSelect.innerHTML = "<option value=''>Seleccioná un horario</option>";
 
-  const ocupadosSnapshot = await db.collection("turnos")
-    .where("fecha", "==", fecha)
-    .get();
-
-  const horariosOcupados = ocupadosSnapshot;
-
-  const horarios = [];
-  let start = new Date();
-  start.setHours(10, 0, 0, 0);
-  const end = new Date();
-  end.setHours(21, 0, 0, 0);
-
-  while (start <= end) {
-    horarios.push(new Date(start));
-    start.setMinutes(start.getMinutes() + 30);
-  }
+  const ocupadosSnapshot = await db.collection("turnos").where("fecha", "==", fecha).get();
+  const horariosOcupados = ocupadosSnapshot.docs.map(doc => doc.data().hora);
 
   const ahora = new Date();
-  horarios.forEach(horario => {
-    const horaTexto = horario.toTimeString().substring(0, 5);
+  const esHoy = fechaSeleccionada.toDateString() === hoyDate.toDateString();
+  const horaActualDecimal = ahora.getHours() + ahora.getMinutes() / 60;
+
+  const todosLosHorarios = [
+    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+    "18:00", "18:30", "19:00", "19:30", "20:00"
+  ];
+
+  todosLosHorarios.forEach(hora => {
+    const partes = hora.split(":");
+    const horaDecimal = parseInt(partes[0]) + parseInt(partes[1]) / 60;
+
+    if (esHoy && horaDecimal <= horaActualDecimal) return;
+
     const option = document.createElement("option");
-    option.value = horaTexto;
-    option.textContent = horaTexto;
+    option.value = hora;
+    option.textContent = horariosOcupados.includes(hora) ? hora + " - Ocupado" : hora;
 
-    const ocupado = horariosOcupados.docs.some(doc => doc.data().hora === horaTexto);
-    const pasada = fechaSeleccionada.toDateString() === hoyDate.toDateString() && horario < ahora;
-
-    if (ocupado || pasada) {
+    if (horariosOcupados.includes(hora)) {
       option.disabled = true;
       option.style.textDecoration = "line-through";
     }
 
     horaSelect.appendChild(option);
+  });
+});
+
   });
 
 
