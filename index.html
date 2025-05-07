@@ -128,6 +128,72 @@
     }
   });
 </script>
+
+<!-- Modal de Confirmación -->
+<div id="modalConfirmacion" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+    background-color:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:1000;">
+  <div style="background:#fff; padding:20px; border-radius:8px; width:90%; max-width:400px; font-family:sans-serif; box-shadow:0 0 10px rgba(0,0,0,0.3);">
+    <h3 style="margin-bottom:15px;">Confirmar Turno</h3>
+    <p><strong>Nombre:</strong> <span id="confNombre"></span></p>
+    <p><strong>Servicio:</strong> <span id="confServicio"></span></p>
+    <p><strong>Hora:</strong> <span id="confHora"></span></p>
+    <p><strong>Día:</strong> <span id="confFecha"></span></p>
+    <div style="margin-top:20px; text-align:right;">
+      <button onclick="document.getElementById('modalConfirmacion').style.display='none'" style="margin-right:10px;">Cancelar</button>
+      <button id="btnConfirmarTurno" style="background:#222; color:white; border:none; padding:5px 10px; border-radius:5px;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Botón Flotante -->
+<style>
+  .fab-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+  }
+  .fab-main {
+    width: 60px;
+    height: 60px;
+    background-color: #000;
+    border-radius: 50%;
+    background-image: url('logo.png');
+    background-size: cover;
+    border: 2px solid white;
+    cursor: pointer;
+  }
+  .fab-actions {
+    display: none;
+    margin-bottom: 10px;
+    text-align: right;
+  }
+  .fab-container.show .fab-actions {
+    display: block;
+  }
+  .fab-button {
+    margin: 5px 0;
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+  }
+</style>
+
+<div class="fab-container" id="fabContainer">
+  <div class="fab-actions">
+    <div class="fab-button" onclick="window.open('https://wa.me/5491122334455?text=Hola%20CabriBarber%20quiero%20consultarte:', '_blank')">WhatsApp</div>
+    <div class="fab-button" onclick="window.open('https://www.instagram.com/cabribarber.32?igsh=ZmJ1aGZqeGZ4bGI3', '_blank')">Instagram</div>
+    <div class="fab-button" onclick="window.open('https://www.tiktok.com/@cabribarber.32?_t=ZS-8wACpi1MSjQ&_r=1', '_blank')">TikTok</div>
+  </div>
+  <div class="fab-main" onclick="document.getElementById('fabContainer').classList.toggle('show')"></div>
+</div>
+
 </body>
 
 </html>
