@@ -66,7 +66,7 @@ fechaInput.addEventListener("change", async () => {
   }
 });
 
-// Reservar turno
+// Botón Reservar
 document.getElementById("reservar").addEventListener("click", async (e) => {
   e.preventDefault();
 
@@ -80,37 +80,30 @@ document.getElementById("reservar").addEventListener("click", async (e) => {
     return;
   }
 
-  await db.collection("turnos").add({
-    nombre,
-    servicio,
-    fecha,
-    hora,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
   document.getElementById("confNombre").textContent = nombre;
   document.getElementById("confServicio").textContent = servicio;
-  document.getElementById("confHora").textContent = hora;
   document.getElementById("confFecha").textContent = fecha;
+  document.getElementById("confHora").textContent = hora;
+
   document.getElementById("modalConfirmacion").style.display = "flex";
+
+  document.getElementById("btnConfirmarTurno").onclick = async function () {
+    await db.collection("turnos").add({
+      nombre,
+      servicio,
+      fecha,
+      hora,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    const mensaje = `CabriBarber%0A%0ANombre: ${nombre}%0AServicio: ${servicio}%0AFecha: ${fecha}%0AHora: ${hora}`;
+    const telefono = "5491122334455";
+    window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
+
+    document.getElementById("modalConfirmacion").style.display = "none";
+  };
 });
 
-// Confirmar turno por WhatsApp
-document.getElementById("btnConfirmarTurno").addEventListener("click", function() {
-  const nombre = document.getElementById("nombre").value;
-  const servicio = document.getElementById("servicio").value;
-  const hora = document.getElementById("hora").value;
-  const fecha = document.getElementById("fecha").value;
-
-  const mensaje = `CabriBarber%0A%0ANombre: ${nombre}%0AServicio: ${servicio}%0AFecha: ${fecha}%0AHora: ${hora}`;
-  const telefono = "5491122334455";
-
-  window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
-  document.getElementById("modalConfirmacion").style.display = "none";
-});
-
-
-
-document.getElementById("btnCancelarTurno").addEventListener("click", function() {
+document.getElementById("btnCancelarTurno").addEventListener("click", function () {
   document.getElementById("modalConfirmacion").style.display = "none";
 });
