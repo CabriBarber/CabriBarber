@@ -102,9 +102,15 @@ document.getElementById("btnConfirmarTurno").addEventListener("click", function(
   const hora = document.getElementById("hora").value;
   const fecha = document.getElementById("fecha").value;
 
-  const mensaje = `Hola ${nombre}, tu turno en CabriBarber está reservado:%0A- Servicio: ${servicio}%0A- Hora: ${hora}%0A- Día: ${fecha}`;
+  const mensaje = `CabriBarber%0A%0ANombre: ${nombre}%0AServicio: ${servicio}%0AFecha: ${fecha}%0AHora: ${hora}`;
   const telefono = "5491122334455";
 
   window.open(`https://wa.me/${telefono}?text=${mensaje}`, "_blank");
+  document.getElementById("modalConfirmacion").style.display = "none";
+});
+
+
+
+document.getElementById("btnCancelarTurno").addEventListener("click", function() {
   document.getElementById("modalConfirmacion").style.display = "none";
 });
